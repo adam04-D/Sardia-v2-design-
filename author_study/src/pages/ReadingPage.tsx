@@ -48,7 +48,7 @@ const ReaderInteraction = ({ liked, setLiked }: { liked: boolean, setLiked: (val
               <label className="font-sans text-[10px] font-bold text-accent uppercase tracking-[0.2em] mr-2 text-right block">الاسم</label>
               <input 
                 type="text" 
-                placeholder="اسمك الكريم..."
+                placeholder="الاسم"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full bg-white/40 border border-stone-200 rounded-2xl px-6 py-4 font-sans text-text-main focus:outline-none focus:border-accent/30 focus:bg-white transition-all placeholder:text-stone-300 shadow-sm text-right"
@@ -438,7 +438,13 @@ export default function ReadingPage() {
           >
             <Minus size={16} />
           </button>
-          <Type size={18} className="text-primary" />
+          <button 
+            onClick={() => setFontSize(1)}
+            title="الحجم الافتراضي (Reset Size)"
+            className={`p-1.5 transition-colors ${fontSize === 1 ? 'text-primary' : 'text-accent font-bold'}`}
+          >
+            <Type size={18} />
+          </button>
           <button 
             onClick={increaseFontSize}
             className="p-1.5 text-text-muted hover:text-accent transition-colors"

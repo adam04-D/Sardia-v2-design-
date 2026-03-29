@@ -164,10 +164,11 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileHover={{ y: -12, scale: 1.01, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileTap={{ scale: 0.98 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="md:col-span-2 md:row-span-2 relative group overflow-hidden rounded-[2.5rem] bg-surface shadow-xl shadow-accent/5 min-h-[400px] md:min-h-[500px]"
+              className="md:col-span-2 md:row-span-2 relative group overflow-hidden rounded-[2.5rem] bg-surface shadow-xl shadow-accent/5 min-h-[400px] md:min-h-[500px] border border-accent/5"
             >
               <div className="absolute inset-0 z-0">
                 <motion.img
@@ -204,7 +205,8 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileHover={{ y: -12, scale: 1.01, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileTap={{ scale: 0.98 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               className="md:col-span-2 relative group overflow-hidden rounded-[2.5rem] bg-stone-100/80 border border-stone-200/50 min-h-[240px]"
@@ -234,7 +236,8 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileHover={{ y: -12, scale: 1.01, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileTap={{ scale: 0.98 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
               className="md:col-span-1 relative group overflow-hidden rounded-[2.5rem] bg-white border border-stone-200/50 shadow-sm min-h-[240px]"
@@ -259,7 +262,8 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileHover={{ y: -12, scale: 1.01, boxShadow: "0 25px 50px -12px rgba(139, 94, 52, 0.25)" }}
+              whileTap={{ scale: 0.98 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
               className="md:col-span-1 relative group overflow-hidden rounded-[2.5rem] bg-stone-100/50 min-h-[240px]"
