@@ -47,3 +47,14 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(140, 75, 62, 0.08);
 }
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Apple-style Snap Scrolling */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-margin-top: 80px;
+}

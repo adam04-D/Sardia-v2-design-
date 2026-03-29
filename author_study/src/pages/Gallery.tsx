@@ -6,6 +6,7 @@
 import { motion, useScroll, useTransform } from 'motion/react';
 import { BookOpen, Bookmark, Headphones, ArrowUpLeft, ArrowLeft } from 'lucide-react';
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { RevealText } from '../components/RevealText';
 
 export default function Gallery() {
@@ -35,6 +36,7 @@ export default function Gallery() {
       <section className="grid grid-cols-1 md:grid-cols-4 gap-6 md:grid-rows-2 mb-40">
         
         {/* Featured Card (Large) */}
+        <Link to="/reading">
         <motion.div 
           initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -63,15 +65,17 @@ export default function Gallery() {
               <p className="font-serif text-2xl md:text-3xl leading-[1.8] text-primary mb-10 italic">
                 "إن الحداثة لا تعني القطيعة مع الماضي، بل هي القدرة على استنطاق التراث بأدوات العصر..."
               </p>
-              <button className="bg-primary text-surface px-8 py-4 rounded-full font-sans text-sm font-bold flex items-center gap-4 hover:bg-accent transition-colors shadow-lg shadow-primary/20">
+              <span className="bg-primary text-surface px-8 py-4 rounded-full font-sans text-sm font-bold flex items-center gap-4 hover:bg-accent transition-colors shadow-lg shadow-primary/20">
                 اقرأ العمل كاملاً
                 <ArrowLeft size={18} />
-              </button>
+              </span>
             </div>
           </div>
         </motion.div>
+        </Link>
 
         {/* Medium Card: Poetry */}
+        <Link to="/reading">
         <motion.div 
           initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -90,15 +94,17 @@ export default function Gallery() {
               <p className="font-serif text-2xl leading-[1.8] mb-8 italic">
                 "أنا الذي نظر الأعمى إلى أدبي.. وأسمعت كلماتي من به صممُ"
               </p>
-              <a href="#" className="font-sans text-sm font-bold tracking-wider flex items-center gap-2 hover:text-stone-200 transition-colors">
+              <span className="font-sans text-sm font-bold tracking-wider flex items-center gap-2 hover:text-stone-200 transition-colors">
                 استكشف المجموعة
                 <ArrowLeft size={16} />
-              </a>
+              </span>
             </div>
           </div>
         </motion.div>
+        </Link>
 
         {/* Small Card: Essay */}
+        <Link to="/reading">
         <motion.div 
           initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -114,13 +120,15 @@ export default function Gallery() {
             
             <div className="absolute inset-0 bg-surface p-8 flex flex-col justify-center items-center opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[0.16,1,0.3,1]">
               <Bookmark className="text-accent mb-4" size={24} strokeWidth={1.5} />
-              <p className="font-sans text-sm font-bold text-text-muted mb-6">١٢ دقيقة للقراءة</p>
-              <button className="text-primary font-sans font-bold hover:text-accent transition-colors border-b border-primary hover:border-accent pb-1">ابدأ القراءة</button>
+              <p className="font-sans text-sm font-bold text-text-muted mb-6">12 دقيقة للقراءة</p>
+              <span className="text-primary font-sans font-bold hover:text-accent transition-colors border-b border-primary hover:border-accent pb-1">ابدأ القراءة</span>
             </div>
           </div>
         </motion.div>
+        </Link>
 
         {/* Small Card: Short Story */}
+        <Link to="/reading">
         <motion.div 
           initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -141,6 +149,7 @@ export default function Gallery() {
             </div>
           </div>
         </motion.div>
+        </Link>
 
       </section>
 
@@ -157,29 +166,29 @@ export default function Gallery() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
             {
-              date: "١٤ مارس ٢٠٢٤",
+              date: "14 مارس 2024",
               category: "دراسات نقدية",
               title: "تجليات الصوفية في الشعر الأندلسي",
               desc: "دراسة معمقة في الرموز والإشارات التي شكلت الهوية الشعرية لمتصوفة الأندلس وعلاقتهم بالطبيعة والجمال.",
               img: "https://images.unsplash.com/photo-1455390582262-044cdead2708?q=80&w=800&auto=format&fit=crop"
             },
             {
-              date: "١٠ مارس ٢٠٢٤",
+              date: "10 مارس 2024",
               category: "مخطوطات",
               title: "جماليات الخط الكوفي في المصاحف الأثرية",
               desc: "تتبع تطور الخط الكوفي من البساطة إلى التعقيد الهندسي والزخرفي عبر العصور الإسلامية المختلفة.",
               img: "https://images.unsplash.com/photo-1584285418504-03f615822d56?q=80&w=800&auto=format&fit=crop"
             },
             {
-              date: "٠٥ مارس ٢٠٢٤",
+              date: "05 مارس 2024",
               category: "سير أدبية",
               title: "طه حسين: معارك التنوير والذاكرة",
               desc: "وقوف على أهم المحطات الفكرية في حياة عميد الأدب العربي وأثر معاركه الأدبية في تشكيل العقل العربي الحديث.",
               img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop"
             }
           ].map((article, i) => (
+            <Link to="/reading" key={i}>
             <motion.article 
-              key={i}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -208,6 +217,7 @@ export default function Gallery() {
                 </p>
               </div>
             </motion.article>
+            </Link>
           ))}
         </div>
       </section>

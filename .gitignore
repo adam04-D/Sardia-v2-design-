@@ -1,1 +1,9 @@
-/stitch models 
+/stitch models
+*.webp
+*.jpg
+*.png
+*.jpeg
+author_study/public/
+node_modules/
+dist/
+.env

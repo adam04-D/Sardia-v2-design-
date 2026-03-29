@@ -4,8 +4,9 @@
  */
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
-import { BookOpen, Bookmark, Maximize, Minimize, Type, Plus, Minus, Share2, List, X, Clock } from 'lucide-react';
+import { BookOpen, Bookmark, Maximize, Minimize, Type, Plus, Minus, Share2, List, X, ArrowRight, Heart, Send } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { RevealText } from '../components/RevealText';
 
 // Ornamental Break for Novels/Essays
@@ -16,6 +17,69 @@ const OrnamentalBreak = () => (
     <span className="w-1.5 h-1.5 rounded-full bg-accent/40"></span>
   </div>
 );
+
+// Reader Interaction Component
+const ReaderInteraction = () => {
+  const [liked, setLiked] = useState(false);
+  const [name, setName] = useState("");
+  const [comment, setComment] = useState("");
+
+  return (
+    <section className="mt-32 pt-16 border-t border-accent/10">
+      <div className="max-w-2xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12 text-center md:text-right">
+          <div className="space-y-2">
+            <h3 className="font-serif text-3xl text-primary font-bold">شاركنا أثر النص</h3>
+            <p className="font-sans text-sm text-text-muted">اترك انطباعك أو كلمة للمؤلف</p>
+          </div>
+          <button 
+            onClick={() => setLiked(!liked)}
+            className={`flex items-center gap-3 px-8 py-4 rounded-full transition-all duration-500 border group ${liked ? 'bg-accent/5 border-accent text-accent shadow-lg shadow-accent/5' : 'bg-stone-50 border-stone-200 text-stone-400 hover:border-accent/30 hover:bg-stone-100'}`}
+          >
+            <Heart size={22} fill={liked ? "currentColor" : "none"} className={`transition-transform duration-500 ${liked ? "scale-110" : "group-hover:scale-110"}`} />
+            <span className="font-sans text-sm font-bold tracking-wide">{liked ? "أعجبك النص" : "أعجبني"}</span>
+          </button>
+        </div>
+
+        <div className="glass-panel p-8 md:p-10 rounded-[2.5rem] space-y-8 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all group-hover:bg-accent/10"></div>
+          
+          <div className="grid grid-cols-1 gap-8 relative z-10">
+            <div className="space-y-3">
+              <label className="font-sans text-[10px] font-bold text-accent uppercase tracking-[0.2em] mr-2 text-right block">الاسم</label>
+              <input 
+                type="text" 
+                placeholder="اسمك الكريم..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full bg-white/40 border border-stone-200 rounded-2xl px-6 py-4 font-sans text-text-main focus:outline-none focus:border-accent/30 focus:bg-white transition-all placeholder:text-stone-300 shadow-sm text-right"
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <label className="font-sans text-[10px] font-bold text-accent uppercase tracking-[0.2em] mr-2 text-right block">التعليق</label>
+              <textarea 
+                rows={4}
+                placeholder="ما الذي استوقفك في هذا العمل؟"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="w-full bg-white/40 border border-stone-200 rounded-2xl px-6 py-4 font-sans text-text-main focus:outline-none focus:border-accent/30 focus:bg-white transition-all placeholder:text-stone-300 resize-none shadow-sm text-right"
+              />
+            </div>
+          </div>
+
+          <button className="w-full group relative overflow-hidden bg-primary text-surface px-8 py-5 rounded-2xl font-sans text-sm font-bold transition-all hover:shadow-2xl hover:shadow-primary/20 flex items-center justify-center gap-3 active:scale-[0.98]">
+            <span className="absolute inset-0 w-full h-full bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-[0.16,1,0.3,1]"></span>
+            <span className="relative z-10 flex items-center gap-3">
+              <Send size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+              إرسال التعقيب
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 function TopProgressBar() {
   const { scrollYProgress } = useScroll();
@@ -31,24 +95,90 @@ function TopProgressBar() {
 
 export default function ReadingPage() {
   const [isZenMode, setIsZenMode] = useState(false);
-  const [fontSize, setFontSize] = useState(1); // multiplier: 1 = 100%, 1.2 = 120%, etc.
+  const [fontSize, setFontSize] = useState(1);
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [activeChapter, setActiveChapter] = useState('ch1');
   
   const heroRef = useRef(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const yImage = useTransform(heroScroll, [0, 1], ["0%", "20%"]);
   const opacityImage = useTransform(heroScroll, [0, 1], [1, 0.3]);
 
-  const toggleZenMode = () => setIsZenMode(!isZenMode);
+  const toggleZenMode = async () => {
+    try {
+      if (!isZenMode) {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else {
+          setIsZenMode(true); // Fallback for browsers that block it
+        }
+      } else {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else {
+          setIsZenMode(false); // Fallback
+        }
+      }
+    } catch (e) {
+      setIsZenMode(!isZenMode);
+    }
+  };
+
+  // Sync state if user exits via ESC key
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsZenMode(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
   const increaseFontSize = () => setFontSize(prev => Math.min(prev + 0.1, 1.5));
   const decreaseFontSize = () => setFontSize(prev => Math.max(prev - 0.1, 0.8));
 
-  const chapters = [
-    { id: "ch1", title: "الفصل الأول: النشأة والتكوين", time: "١٥ دقيقة" },
-    { id: "ch2", title: "الفصل الثاني: رمزية الخمرة الروحية", time: "٢٢ دقيقة" },
-    { id: "ch3", title: "الفصل الثالث: مقامات العشق", time: "١٨ دقيقة" },
-    { id: "ch4", title: "الفصل الرابع: الفناء والبقاء", time: "٣٠ دقيقة" },
-  ];
+  const [chapters, setChapters] = useState<{ id: string; title: string }[]>([]);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+
+  // Track if we are at the bottom of the page to hide the floating bar
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const bodyHeight = document.body.offsetHeight;
+      setIsAtBottom(bodyHeight - scrollPosition < 500); // Hide when within 500px of bottom margin
+    };
+    window.addEventListener('scroll', handleScroll);
+    // Trigger once on mount in case the page is short
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Auto-detect chapters from the DOM and track the active one
+  useEffect(() => {
+    const chapterEls = document.querySelectorAll('[id^="ch"]');
+    const detected: { id: string; title: string }[] = [];
+    chapterEls.forEach((el) => {
+      const heading = el.querySelector('h2');
+      if (heading) {
+        detected.push({ id: el.id, title: heading.textContent || '' });
+      }
+    });
+    setChapters(detected);
+    if (detected.length > 0) setActiveChapter(detected[0].id);
+
+    const observers: IntersectionObserver[] = [];
+    chapterEls.forEach((el) => {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveChapter(el.id);
+          }
+        },
+        { rootMargin: '-20% 0px -60% 0px' }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   // Effect to handle zen mode body classes
   useEffect(() => {
@@ -63,6 +193,16 @@ export default function ReadingPage() {
   return (
     <div className={`transition-colors duration-1000 ${isZenMode ? 'bg-[#FDFBF7]' : ''}`}>
       <TopProgressBar />
+
+      {/* Zen Mode Escape Button */}
+      {isZenMode && (
+        <div className="fixed top-0 right-0 p-8 z-[60] opacity-0 hover:opacity-100 transition-opacity duration-500">
+          <Link to="/" className="flex items-center gap-2 text-stone-500 hover:text-accent font-sans text-sm font-bold bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-full shadow-lg border border-stone-200/50 hover:shadow-accent/10 transition-all">
+            <ArrowRight size={16} />
+            العودة للمكتبة
+          </Link>
+        </div>
+      )}
 
       {/* Table of Contents Drawer */}
       <AnimatePresence>
@@ -92,10 +232,6 @@ export default function ReadingPage() {
                 <div className="mb-8">
                   <p className="font-sans text-xs font-bold text-stone-400 tracking-wider uppercase mb-2">الكتاب</p>
                   <h3 className="font-serif text-xl text-primary">تجليات الصوفية في الشعر الأندلسي</h3>
-                  <p className="font-sans text-sm text-accent mt-2 flex items-center gap-2">
-                    <Clock size={14} />
-                    إجمالي القراءة: ٣ ساعات و ٢٠ دقيقة
-                  </p>
                 </div>
                 <ul className="space-y-1">
                   {chapters.map((chapter, idx) => (
@@ -103,12 +239,12 @@ export default function ReadingPage() {
                       <a 
                         href={`#${chapter.id}`}
                         onClick={() => setIsTocOpen(false)}
-                        className={`block p-4 rounded-2xl transition-all duration-300 group ${idx === 1 ? 'bg-accent/5 border border-accent/10' : 'hover:bg-stone-50'}`}
+                        className={`block p-4 rounded-2xl transition-all duration-300 group ${activeChapter === chapter.id ? 'bg-accent/5 border border-accent/10' : 'hover:bg-stone-50'}`}
                       >
-                        <h4 className={`font-serif text-lg mb-1 transition-colors ${idx === 1 ? 'text-accent font-bold' : 'text-text-main group-hover:text-primary'}`}>
+                        <h4 className={`font-serif text-lg mb-1 transition-colors ${activeChapter === chapter.id ? 'text-accent font-bold' : 'text-text-main group-hover:text-primary'}`}>
                           {chapter.title}
                         </h4>
-                        <p className="font-sans text-xs text-stone-400">{chapter.time}</p>
+
                       </a>
                     </li>
                   ))}
@@ -122,7 +258,7 @@ export default function ReadingPage() {
       <div className={`transition-all duration-1000 ${isZenMode ? 'max-w-3xl mx-auto' : ''}`}>
         
         {/* Immersive Hero Section */}
-        <header ref={heroRef} className={`relative h-[60vh] min-h-[500px] flex items-center justify-center mb-24 overflow-hidden rounded-[3rem] ${isZenMode ? 'mt-8' : ''}`}>
+        <header ref={heroRef} className={`relative h-[60vh] min-h-[500px] items-center justify-center mb-24 overflow-hidden rounded-[3rem] ${isZenMode ? 'hidden' : 'flex'}`}>
           <motion.div 
             className="absolute inset-0 z-0"
             style={{ y: yImage, opacity: opacityImage }}
@@ -166,7 +302,7 @@ export default function ReadingPage() {
 
         {/* Reading Content */}
         <article 
-          className="max-w-3xl mx-auto font-serif text-text-main leading-[2.2] transition-all duration-500"
+          className={`max-w-3xl mx-auto font-serif text-text-main leading-[2.2] transition-all duration-500 ${isZenMode ? 'pt-24' : ''}`}
           style={{ fontSize: `${1.125 * fontSize}rem` }}
         >
           <motion.div
@@ -194,7 +330,7 @@ export default function ReadingPage() {
           <div className="space-y-12">
             {/* Chapter 1 */}
             <div id="ch1" className="scroll-mt-32">
-              <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">الفصل الأول: النشأة والتكوين</h2>
+              <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">الفصل 1: النشأة والتكوين</h2>
               
               <p>
                 لم يكن التصوف في الأندلس مجرد نزعة زهدية انعزالية، بل كان تفاعلاً حياً مع معطيات البيئة الأندلسية الخلابة. لقد وجد المتصوفة في طبيعة الأندلس مرآة تعكس الجمال الإلهي، فصاغوا أشعارهم بلغة رمزية مكثفة تمزج بين الوجد الروحي والوصف الحسي الدقيق.
@@ -213,7 +349,7 @@ export default function ReadingPage() {
 
             {/* Chapter 2 */}
             <div id="ch2" className="scroll-mt-32">
-              <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">الفصل الثاني: رمزية الخمرة الروحية</h2>
+              <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">الفصل 2: رمزية الخمرة الروحية</h2>
               
               <p>
                 استعار الشعراء المتصوفة مصطلحات الغزل والخمر للتعبير عن حالات الوجد والسكر الروحي. هذا الاستخدام الرمزي أثار جدلاً واسعاً بين الفقهاء، لكنه أثرى المعجم الشعري العربي بدلالات جديدة تجاوزت المعنى الحرفي إلى آفاق أرحب من التأويل.
@@ -257,7 +393,7 @@ export default function ReadingPage() {
             
             <OrnamentalBreak />
             
-            <p className="text-center text-text-muted italic mb-24">نهاية الجزء المتاح للقراءة المجانية.</p>
+            <ReaderInteraction />
           </div>
         </article>
       </div>
@@ -265,8 +401,8 @@ export default function ReadingPage() {
       {/* Floating Control Menu */}
       <motion.div 
         initial={{ y: 100, opacity: 0, x: "-50%" }}
-        animate={{ y: 0, opacity: 1, x: "-50%" }}
-        transition={{ delay: 1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        animate={{ y: isAtBottom ? 150 : 0, opacity: isAtBottom ? 0 : 1, x: "-50%" }}
+        transition={{ delay: isAtBottom ? 0 : 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="fixed bottom-8 left-1/2 z-50 glass-panel rounded-full px-6 py-3 flex items-center gap-6 shadow-2xl shadow-accent/10"
       >
         <button 
