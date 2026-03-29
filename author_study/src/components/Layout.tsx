@@ -4,7 +4,7 @@
  */
 
 import { motion, useScroll, useTransform } from 'motion/react';
-import { Search, Menu, Instagram, Mail } from 'lucide-react';
+import { Search, Menu, Instagram, Mail, Twitter, Youtube } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import SpotlightSearch from './SpotlightSearch';
@@ -175,27 +175,71 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      {/* Footer */}
+      {/* Premium Multi-Column Footer */}
       {!isReading && (
-        <footer id="contact" className="w-full py-16 border-t border-accent/10 glass-panel mt-20">
-          <div className="flex flex-col items-center px-6 md:px-12 max-w-7xl mx-auto gap-8">
-            <div className="text-3xl font-serif font-bold text-text-main">سرديا</div>
-            <p className="font-sans text-text-muted text-center max-w-md leading-relaxed">تواصل معي عبر وسائل التواصل الاجتماعي أو البريد الإلكتروني</p>
-            <div className="flex gap-4">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full border border-stone-200 text-stone-400 hover:text-accent hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300">
-                <Instagram size={22} />
-              </a>
-              <a href="mailto:contact@sardia.com" className="p-3 rounded-full border border-stone-200 text-stone-400 hover:text-accent hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300">
-                <Mail size={22} />
-              </a>
+        <footer id="contact" className="w-full bg-[#523A28] text-[#FDFBF7] py-20 mt-20">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-8 mb-16 border-b border-white/10 pb-16">
+              
+              {/* Brand & Socials (Col 1) */}
+              <div className="md:col-span-2 space-y-8">
+                <div className="text-4xl font-serif font-bold text-white tracking-widest">آدم داودي</div>
+                <div className="flex gap-4">
+                  <a href="#" className="text-white/70 hover:text-white transition-colors duration-300">
+                    <Instagram size={20} />
+                  </a>
+                  <a href="#" className="text-white/70 hover:text-white transition-colors duration-300">
+                    <Twitter size={20} />
+                  </a>
+                  <a href="#" className="text-white/70 hover:text-white transition-colors duration-300">
+                    <Youtube size={20} />
+                  </a>
+                  <a href="mailto:adamdaoudi@gmail.com" className="text-white/70 hover:text-white transition-colors duration-300">
+                    <Mail size={20} />
+                  </a>
+                </div>
+              </div>
+
+              {/* Links (Cols 2-4) */}
+              <div className="space-y-6">
+                <h4 className="font-serif text-lg text-white mb-4">عن المؤلف</h4>
+                <ul className="space-y-4 font-sans text-sm text-white/70">
+                  <li><Link to="/about" className="hover:text-white transition-colors">قصتي</Link></li>
+                  <li><a href="#" className="hover:text-white transition-colors">الصحافة والإعلام</a></li>
+                </ul>
+              </div>
+
+              <div className="space-y-6">
+                <h4 className="font-serif text-lg text-white mb-4">المكتبة</h4>
+                <ul className="space-y-4 font-sans text-sm text-white/70">
+                  <li><Link to="/reading" className="hover:text-white transition-colors">الكتب</Link></li>
+                  <li><Link to="/reading" className="hover:text-white transition-colors">دراسات نقدية</Link></li>
+                  <li><Link to="/reading" className="hover:text-white transition-colors">قصائد</Link></li>
+                  <li><Link to="/reading" className="hover:text-white transition-colors">قصص قصيرة</Link></li>
+                </ul>
+              </div>
+
+              <div className="space-y-6">
+                <h4 className="font-serif text-lg text-white mb-4">المساعدة</h4>
+                <ul className="space-y-4 font-sans text-sm text-white/70">
+                  <li><a href="mailto:adamdaoudi@gmail.com" className="hover:text-white transition-colors">التواصل الأكاديمي</a></li>
+                  <li><a href="mailto:adamdaoudi@gmail.com" className="hover:text-white transition-colors">دعم القراء</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">الأسئلة الشائعة</a></li>
+                </ul>
+              </div>
+
             </div>
-            <div className="w-full border-t border-accent/10 pt-8 mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-text-muted text-sm font-sans">© 2026 سرديا. جميع الحقوق محفوظة للمؤلف.</p>
-              <div className="flex gap-8">
-                <a href="#" className="text-text-muted text-sm font-sans font-medium hover:text-accent transition-colors">الخصوصية</a>
-                <a href="#" className="text-text-muted text-sm font-sans font-medium hover:text-accent transition-colors">الأرشيف</a>
+
+            {/* Bottom Bar */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-xs text-white/50">
+              <p>© 2026 سرديا. جميع الحقوق محفوظة. تم تطوير الموقع بواسطة آدم داودي.</p>
+              <div className="flex gap-6">
+                <a href="#" className="hover:text-white transition-colors">شروط الاستخدام</a>
+                <a href="#" className="hover:text-white transition-colors">سياسة الخصوصية</a>
               </div>
             </div>
+
           </div>
         </footer>
       )}

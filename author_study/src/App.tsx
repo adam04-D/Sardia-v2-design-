@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import ReadingPage from './pages/ReadingPage';
+import AboutPage from './pages/AboutPage';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/reading" element={<ReadingPage />} />
+          <Route path="/about" element={<AboutPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>

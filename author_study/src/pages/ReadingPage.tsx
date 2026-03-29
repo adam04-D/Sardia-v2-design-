@@ -19,8 +19,7 @@ const OrnamentalBreak = () => (
 );
 
 // Reader Interaction Component
-const ReaderInteraction = () => {
-  const [liked, setLiked] = useState(false);
+const ReaderInteraction = ({ liked, setLiked }: { liked: boolean, setLiked: (val: boolean) => void }) => {
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
 
@@ -94,7 +93,13 @@ function TopProgressBar() {
 }
 
 export default function ReadingPage() {
+  // Always scroll to top when opening a new reading page
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [isZenMode, setIsZenMode] = useState(false);
+  const [liked, setLiked] = useState(false);
   const [fontSize, setFontSize] = useState(1);
   const [isTocOpen, setIsTocOpen] = useState(false);
   const [activeChapter, setActiveChapter] = useState('ch1');
@@ -393,7 +398,7 @@ export default function ReadingPage() {
             
             <OrnamentalBreak />
             
-            <ReaderInteraction />
+            <ReaderInteraction liked={liked} setLiked={setLiked} />
           </div>
         </article>
       </div>
@@ -445,8 +450,12 @@ export default function ReadingPage() {
 
         <div className="w-[1px] h-6 bg-stone-300"></div>
 
-        <button className="p-2 text-text-muted hover:text-accent transition-colors">
-          <Bookmark size={20} />
+        <button 
+          className={`p-2 transition-colors ${liked ? 'text-accent' : 'text-text-muted hover:text-accent'}`}
+          onClick={() => setLiked(!liked)}
+          title={liked ? "إلغاء الإعجاب" : "إعجاب"}
+        >
+          <Heart size={20} fill={liked ? "currentColor" : "none"} className={`transition-transform duration-300 ${liked ? "scale-110" : "hover:scale-110"}`} />
         </button>
       </motion.div>
     </div>
