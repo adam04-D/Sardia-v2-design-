@@ -5,12 +5,29 @@
 
 import { motion, useScroll, useTransform } from 'motion/react';
 import { Mail, BookOpen, Bookmark, Headphones, ArrowLeft } from 'lucide-react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RevealText } from '../components/RevealText';
 import Seo from '../components/Seo';
 import { Eyebrow } from '../components/ui/Eyebrow';
 import { SectionHeading } from '../components/ui/SectionHeading';
+import { api } from '../lib/api';
+import type { Work } from '../types';
+
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1455390582262-044cdead2708?q=80&w=800&auto=format&fit=crop';
+
+function formatArabicDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('ar', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  } catch {
+    return '';
+  }
+}
 
 export default function HomePage() {
   const heroRef = useRef(null);
@@ -292,67 +309,88 @@ export default function HomePage() {
           <div className="mb-20">
             <SectionHeading title="أحدث الإضافات" className="mb-12" />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {[
-                {
-                  date: "14 مارس 2024",
-                  category: "دراسات نقدية",
-                  title: "تجليات الصوفية في الشعر الأندلسي",
-                  desc: "دراسة معمقة في الرموز والإشارات التي شكلت الهوية الشعرية لمتصوفة الأندلس وعلاقتهم بالطبيعة والجمال.",
-                  img: "https://images.unsplash.com/photo-1455390582262-044cdead2708?q=80&w=800&auto=format&fit=crop"
-                },
-                {
-                  date: "10 مارس 2024",
-                  category: "مخطوطات",
-                  title: "جماليات الخط الكوفي في المصاحف الأثرية",
-                  desc: "تتبع تطور الخط الكوفي من البساطة إلى التعقيد الهندسي والزخرفي عبر العصور الإسلامية المختلفة.",
-                  img: "https://images.unsplash.com/photo-1584285418504-03f615822d56?q=80&w=800&auto=format&fit=crop"
-                },
-                {
-                  date: "05 مارس 2024",
-                  category: "سير أدبية",
-                  title: "طه حسين: معارك التنوير والذاكرة",
-                  desc: "وقوف على أهم المحطات الفكرية في حياة عميد الأدب العربي وأثر معاركه الأدبية في تشكيل العقل العربي الحديث.",
-                  img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop"
-                }
-              ].map((article, i) => (
-                <Link to="/reading" key={i}>
-                <motion.article
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -8, scale: 1.01 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, delay: i * 0.2, ease: "easeOut" }}
-                  className="group cursor-pointer"
-                >
-                  <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-8 bg-stone-100 relative">
-                    <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply"></div>
-                    <img
-                      src={article.img}
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-110"
-                    />
-                  </div>
-                  <div className="space-y-4 px-2">
-                    <div className="flex gap-4 font-sans text-[10px] font-bold tracking-[0.2em] text-stone-400 uppercase">
-                      <span>{article.date}</span>
-                      <span className="text-accent">•</span>
-                      <span>{article.category}</span>
-                    </div>
-                    <h4 className="font-serif text-3xl text-primary group-hover:text-accent transition-colors duration-300 leading-snug">
-                      {article.title}
-                    </h4>
-                    <p className="font-sans text-text-muted text-sm leading-relaxed line-clamp-2">
-                      {article.desc}
-                    </p>
-                  </div>
-                </motion.article>
-                </Link>
-              ))}
-            </div>
+            <LatestWorks />
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+function LatestWorks() {
+  const [works, setWorks] = useState<Work[] | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    api.listWorks(1, 3)
+      .then((d) => { if (!cancelled) setWorks(d.works); })
+      .catch(() => { if (!cancelled) setError(true); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (error) return null;
+
+  if (works === null) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="animate-pulse">
+            <div className="aspect-[4/5] rounded-[2rem] bg-stone-100 mb-8" />
+            <div className="h-3 w-32 bg-stone-100 rounded mb-3" />
+            <div className="h-6 w-4/5 bg-stone-100 rounded mb-3" />
+            <div className="h-4 w-full bg-stone-100 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (works.length === 0) {
+    return (
+      <p className="font-sans text-stone-400 text-center py-12">لا توجد أعمال منشورة بعد.</p>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      {works.map((w, i) => (
+        <Link to={`/reading/${w.id}`} key={w.id}>
+          <motion.article
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -8, scale: 1.01 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.8, delay: i * 0.2, ease: 'easeOut' }}
+            className="group cursor-pointer"
+          >
+            <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-8 bg-stone-100 relative">
+              <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply" />
+              <img
+                src={w.image_url ?? FALLBACK_IMAGE}
+                alt={w.title}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-110"
+              />
+            </div>
+            <div className="space-y-4 px-2">
+              <div className="flex gap-4 font-sans text-[10px] font-bold tracking-[0.2em] text-stone-400 uppercase">
+                <span>{formatArabicDate(w.created_at)}</span>
+                <span className="text-accent">•</span>
+                <span>عمل أدبي</span>
+              </div>
+              <h4 className="font-serif text-3xl text-primary group-hover:text-accent transition-colors duration-300 leading-snug">
+                {w.title}
+              </h4>
+              {w.excerpt && (
+                <p className="font-sans text-text-muted text-sm leading-relaxed line-clamp-2">
+                  {w.excerpt}
+                </p>
+              )}
+            </div>
+          </motion.article>
+        </Link>
+      ))}
+    </div>
   );
 }
