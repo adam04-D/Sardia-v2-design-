@@ -3,6 +3,10 @@
 *.jpg
 *.png
 *.jpeg
+!sardia-v2/public/*.webp
+!sardia-v2/public/*.jpg
+!sardia-v2/public/*.png
+!sardia-v2/public/*.jpeg
 author_study/public/
 node_modules/
 dist/
