@@ -6,21 +6,21 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { Bookmark, Maximize, Minimize, Type, Plus, Minus, Share2, List, X, ArrowRight, Heart, Send } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
+
+const SITE_AUTHOR = {
+  name: 'آدم داودي',
+  role: 'أديب وكاتب',
+  avatar: '/adam.webp',
+};
+const COMMENT_MAX_LENGTH = 2000;
+const NAME_MAX_LENGTH = 80;
 import { RevealText } from '../components/RevealText';
 import { useWork } from '../hooks/useWork';
 import { api } from '../lib/api';
+import { cdnImage, cdnSrcSet } from '../lib/img';
 import type { Comment as WorkComment } from '../types';
 import Seo from '../components/Seo';
-
-// Ornamental Break for Novels/Essays
-const OrnamentalBreak = () => (
-  <div className="flex justify-center items-center gap-3 my-20 opacity-60">
-    <span className="w-1.5 h-1.5 rounded-full bg-accent/40"></span>
-    <span className="w-2 h-2 rounded-full bg-accent/60"></span>
-    <span className="w-1.5 h-1.5 rounded-full bg-accent/40"></span>
-  </div>
-);
 
 // Reader Interaction Component
 const ReaderInteraction = ({
@@ -31,19 +31,26 @@ const ReaderInteraction = ({
 }: {
   liked: boolean;
   onToggleLike: () => void;
-  onSubmitComment: (name: string, content: string) => Promise<string | null>;
+  onSubmitComment: (name: string, content: string, website: string) => Promise<string | null>;
   comments: WorkComment[];
 }) => {
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
+  // Honeypot — must stay empty. Hidden from users, visible to bots.
+  const [website, setWebsite] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<{ kind: 'ok' | 'err'; msg: string } | null>(null);
 
+  const trimmedName = name.trim();
+  const trimmedComment = comment.trim();
+  const overName = trimmedName.length > NAME_MAX_LENGTH;
+  const overComment = trimmedComment.length > COMMENT_MAX_LENGTH;
+
   const handleSubmit = async () => {
-    if (!name.trim() || !comment.trim() || submitting) return;
+    if (!trimmedName || !trimmedComment || submitting || overName || overComment) return;
     setSubmitting(true);
     setStatus(null);
-    const err = await onSubmitComment(name.trim(), comment.trim());
+    const err = await onSubmitComment(trimmedName, trimmedComment, website);
     setSubmitting(false);
     if (err) {
       setStatus({ kind: 'err', msg: err });
@@ -51,6 +58,7 @@ const ReaderInteraction = ({
       setStatus({ kind: 'ok', msg: 'تم إرسال التعقيب، سيظهر بعد الموافقة.' });
       setName("");
       setComment("");
+      setWebsite("");
     }
   };
 
@@ -79,31 +87,53 @@ const ReaderInteraction = ({
           <div className="grid grid-cols-1 gap-8 relative z-10">
             <div className="space-y-3">
               <label className="font-sans text-[10px] font-bold text-accent uppercase tracking-[0.2em] mr-2 text-right block">الاسم</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="الاسم"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                maxLength={NAME_MAX_LENGTH + 20}
                 className="w-full bg-white/40 border border-stone-200 rounded-2xl px-6 py-4 font-sans text-text-main focus:outline-none focus:border-accent/30 focus:bg-white transition-all placeholder:text-stone-300 shadow-sm text-right"
               />
+              {overName && (
+                <p className="font-sans text-xs text-red-500 text-right">الاسم طويل جداً (الحد الأقصى {NAME_MAX_LENGTH} حرفاً).</p>
+              )}
             </div>
             
             <div className="space-y-3">
               <label className="font-sans text-[10px] font-bold text-accent uppercase tracking-[0.2em] mr-2 text-right block">التعليق</label>
-              <textarea 
+              <textarea
                 rows={4}
                 placeholder="ما الذي استوقفك في هذا العمل؟"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
+                maxLength={COMMENT_MAX_LENGTH + 100}
                 className="w-full bg-white/40 border border-stone-200 rounded-2xl px-6 py-4 font-sans text-text-main focus:outline-none focus:border-accent/30 focus:bg-white transition-all placeholder:text-stone-300 resize-none shadow-sm text-right"
               />
+              <div className={`flex justify-between items-center font-sans text-xs ${overComment ? 'text-red-500' : 'text-stone-400'}`}>
+                <span>{overComment ? 'تجاوزت الحد المسموح' : ''}</span>
+                <span>{trimmedComment.length} / {COMMENT_MAX_LENGTH}</span>
+              </div>
             </div>
+          </div>
+
+          {/* Honeypot — off-screen, tab-index -1, autocomplete off. Real users never see it. */}
+          <div aria-hidden="true" className="absolute left-[-9999px] top-auto w-px h-px overflow-hidden">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
           </div>
 
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={submitting || !name.trim() || !comment.trim()}
+            disabled={submitting || !trimmedName || !trimmedComment || overName || overComment}
             className="w-full group relative overflow-hidden bg-primary text-surface px-8 py-5 rounded-2xl font-sans text-sm font-bold transition-all hover:shadow-2xl hover:shadow-primary/20 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="absolute inset-0 w-full h-full bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-[0.16,1,0.3,1]"></span>
@@ -120,9 +150,9 @@ const ReaderInteraction = ({
           )}
         </div>
 
-        {comments.length > 0 && (
-          <div className="mt-16 space-y-6">
-            <h4 className="font-serif text-xl text-primary font-bold text-right">تعقيبات القراء</h4>
+        <div className="mt-16 space-y-6">
+          <h4 className="font-serif text-xl text-primary font-bold text-right">تعقيبات القراء</h4>
+          {comments.length > 0 ? (
             <ul className="space-y-4">
               {comments.map((c) => (
                 <li key={c.id} className="glass-panel p-6 rounded-2xl text-right">
@@ -134,8 +164,12 @@ const ReaderInteraction = ({
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          ) : (
+            <p className="font-sans text-text-muted text-center py-8 text-sm">
+              لا توجد تعقيبات بعد — كن أول من يترك أثراً على هذا العمل.
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -156,12 +190,19 @@ function TopProgressBar() {
 export default function ReadingPage() {
   const { id } = useParams<{ id: string }>();
   const { work, loading, error } = useWork(id);
+
   const [comments, setComments] = useState<WorkComment[]>([]);
 
   // Keyed on work?.id only so optimistic comment updates aren't overwritten
   useEffect(() => {
     setComments(work?.comments ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [work?.id]);
+
+  // Record a view once per work load (backend dedups by fingerprint+day)
+  useEffect(() => {
+    if (!work?.id) return;
+    api.recordView(work.id).catch(() => {});
   }, [work?.id]);
 
   // Always scroll to top when opening a new reading page
@@ -194,21 +235,19 @@ export default function ReadingPage() {
     }
   };
 
-  const handleSubmitComment = async (author_name: string, content: string): Promise<string | null> => {
+  const handleSubmitComment = async (author_name: string, content: string, website: string): Promise<string | null> => {
     if (!id) return 'التعليقات متاحة فقط على الأعمال المنشورة.';
     try {
-      await api.addComment(id, { author_name, content });
+      await api.addComment(id, { author_name, content, website });
       return null;
     } catch (e) {
       return (e as Error).message || 'تعذر إرسال التعقيب.';
     }
   };
 
-  // Derived display values (API data or static fallback)
-  const displayTitle = work?.title ?? 'تجليات الصوفية في الشعر الأندلسي';
-  const displayExcerpt =
-    work?.excerpt ??
-    'دراسة معمقة في الرموز والإشارات التي شكلت الهوية الشعرية لمتصوفة الأندلس وعلاقتهم بالطبيعة والجمال.';
+  // Derived display values (API data or neutral placeholder while loading)
+  const displayTitle = work?.title ?? '';
+  const displayExcerpt = work?.excerpt ?? '';
   const displayImage =
     work?.image_url ??
     'https://images.unsplash.com/photo-1455390582262-044cdead2708?q=80&w=2000&auto=format&fit=crop';
@@ -309,6 +348,9 @@ export default function ReadingPage() {
     return () => document.body.classList.remove('zen-mode-active');
   }, [isZenMode]);
 
+  // Bare /reading with no work selected → send to the library (after all hooks)
+  if (!id) return <Navigate to="/gallery" replace />;
+
   return (
     <div className={`transition-colors duration-1000 ${isZenMode ? 'bg-[#FDFBF7]' : ''}`}>
       <Seo
@@ -317,6 +359,11 @@ export default function ReadingPage() {
         path={id ? `/reading/${id}` : '/reading'}
         image={work?.image_url ?? undefined}
         type="article"
+        article={{
+          publishedTime: work?.created_at,
+          modifiedTime: work?.updated_at ?? work?.created_at,
+          author: SITE_AUTHOR.name,
+        }}
       />
       <TopProgressBar />
 
@@ -357,7 +404,7 @@ export default function ReadingPage() {
               <div className="p-8 overflow-y-auto flex-1">
                 <div className="mb-8">
                   <p className="font-sans text-xs font-bold text-stone-400 tracking-wider uppercase mb-2">الكتاب</p>
-                  <h3 className="font-serif text-xl text-primary">تجليات الصوفية في الشعر الأندلسي</h3>
+                  <h3 className="font-serif text-xl text-primary">{displayTitle || '—'}</h3>
                 </div>
                 <ul className="space-y-1">
                   {chapters.map((chapter) => (
@@ -390,7 +437,9 @@ export default function ReadingPage() {
             style={{ y: yImage, opacity: opacityImage }}
           >
             <img
-              src={displayImage}
+              src={cdnImage(displayImage, 2000) || displayImage}
+              srcSet={cdnSrcSet(displayImage, [800, 1200, 1600, 2000, 2400])}
+              sizes="100vw"
               alt={displayTitle}
               className="w-full h-[120%] object-cover"
             />
@@ -449,10 +498,15 @@ export default function ReadingPage() {
             transition={{ duration: 0.8 }}
             className="flex items-center gap-6 mb-16 pb-8 border-b border-accent/10"
           >
-            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop" alt="Author" className="w-16 h-16 rounded-full object-cover grayscale" />
+            <img
+              src={SITE_AUTHOR.avatar}
+              alt={SITE_AUTHOR.name}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/favicon.svg'; }}
+              className="w-16 h-16 rounded-full object-cover grayscale"
+            />
             <div>
-              <h3 className="font-serif text-xl text-primary font-bold">د. أحمد الهاشمي</h3>
-              <p className="font-sans text-sm text-text-muted">أستاذ الأدب الأندلسي</p>
+              <h3 className="font-serif text-xl text-primary font-bold">{SITE_AUTHOR.name}</h3>
+              <p className="font-sans text-sm text-text-muted">{SITE_AUTHOR.role}</p>
             </div>
             <div className="mr-auto flex gap-3">
               <button aria-label="مشاركة" className="p-2 rounded-full border border-stone-200 text-stone-400 hover:text-accent hover:border-accent transition-colors">
@@ -473,73 +527,20 @@ export default function ReadingPage() {
                 ))}
               </div>
             )}
-            {!fullContentParagraphs && (
-            <>
-            {/* Chapter 1 (demo fallback) */}
-            <div id="ch1" className="scroll-mt-32">
-              <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">الفصل 1: النشأة والتكوين</h2>
-              
-              <p>
-                لم يكن التصوف في الأندلس مجرد نزعة زهدية انعزالية، بل كان تفاعلاً حياً مع معطيات البيئة الأندلسية الخلابة. لقد وجد المتصوفة في طبيعة الأندلس مرآة تعكس الجمال الإلهي، فصاغوا أشعارهم بلغة رمزية مكثفة تمزج بين الوجد الروحي والوصف الحسي الدقيق.
-              </p>
-
-              <p>
-                يبرز ابن عربي كأحد أهم أقطاب هذا التوجه، حيث تتجلى في نصوصه وحدة الوجود من خلال استنطاق عناصر الطبيعة. فالوردة ليست مجرد زهرة، بل هي تجلٍ للجمال المطلق، والنسيم ليس سوى نفحة من نفحات العناية الإلهية.
-              </p>
-
-              <p>
-                وقد ساهم التنوع الثقافي في الأندلس، من تمازج بين الحضارات والأديان، في إثراء التجربة الصوفية وجعلها أكثر انفتاحاً وشمولية. لم يكن المتصوف الأندلسي منغلقاً في صومعته، بل كان مشاركاً في الحياة العامة، يعبر عن رؤاه الفلسفية والروحية من خلال الشعر والنثر، مما جعل الأدب الصوفي الأندلسي يتميز بنكهة خاصة تجمع بين عمق الفكرة وجمال العبارة.
-              </p>
-            </div>
-
-            <OrnamentalBreak />
-
-            {/* Chapter 2 */}
-            <div id="ch2" className="scroll-mt-32">
-              <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">الفصل 2: رمزية الخمرة الروحية</h2>
-              
-              <p>
-                استعار الشعراء المتصوفة مصطلحات الغزل والخمر للتعبير عن حالات الوجد والسكر الروحي. هذا الاستخدام الرمزي أثار جدلاً واسعاً بين الفقهاء، لكنه أثرى المعجم الشعري العربي بدلالات جديدة تجاوزت المعنى الحرفي إلى آفاق أرحب من التأويل.
-              </p>
-
-              <motion.blockquote 
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="relative p-10 my-16 bg-stone-50 rounded-3xl border-r-4 border-accent"
-              >
-                <span className="absolute top-4 right-6 text-6xl text-accent/20 font-serif leading-none">"</span>
-                <p className="relative z-10 text-2xl md:text-3xl text-primary italic leading-[1.8] text-center">
-                  كل جمال في الكون ما هو إلا قطرة من بحر الجمال الإلهي، ومن لم يرَ الله في خلقه، لم يعرفه حق المعرفة.
+            {!fullContentParagraphs && loading && (
+              <div id="ch1" className="scroll-mt-32 space-y-4" aria-hidden="true">
+                <div className="animate-pulse bg-stone-200 h-10 w-2/3 mx-auto rounded mb-8" />
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="animate-pulse bg-stone-100 h-4 rounded" style={{ width: `${85 + ((i * 7) % 15)}%` }} />
+                ))}
+              </div>
+            )}
+            {!fullContentParagraphs && !loading && (
+              <div id="ch1" className="scroll-mt-32 text-center py-16">
+                <p className="font-sans text-text-muted">
+                  {error ? `تعذر تحميل النص: ${error}` : 'لم يُضف محتوى هذا العمل بعد.'}
                 </p>
-                <footer className="mt-6 text-center font-sans text-sm text-text-muted font-bold">— محيي الدين ابن عربي</footer>
-              </motion.blockquote>
-
-              <p>
-                فالخمرة في القاموس الصوفي ليست تلك التي تُذهب العقل، بل هي "خمرة المعرفة" التي تملأ القلب بنور اليقين وتُسكر الروح بحب الخالق. والكأس هي القلب المتهيئ لتلقي التجليات، والساقي هو المرشد أو الفيض الإلهي نفسه.
-              </p>
-
-              <motion.figure 
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="my-16"
-              >
-                <div className="aspect-[21/9] rounded-3xl overflow-hidden mb-4">
-                  <img src="https://images.unsplash.com/photo-1584285418504-03f615822d56?q=80&w=1600&auto=format&fit=crop" alt="Andalusian Architecture" className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000" />
-                </div>
-                <figcaption className="text-center font-sans text-sm text-text-muted">نقوش أندلسية تعكس التداخل بين الفن والروحانية</figcaption>
-              </motion.figure>
-
-              <p>
-                إن دراسة الشعر الصوفي الأندلسي تتطلب قراءة مزدوجة: قراءة جمالية تستمتع بالصورة الفنية، وقراءة تأويلية تغوص في أعماق الرمز لاستخراج المعنى الباطن. إنها رحلة مستمرة لاكتشاف الذات والكون من خلال الكلمة.
-              </p>
-            </div>
-            
-            <OrnamentalBreak />
-            </>
+              </div>
             )}
 
             <ReaderInteraction

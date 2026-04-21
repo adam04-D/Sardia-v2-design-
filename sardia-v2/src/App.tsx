@@ -17,6 +17,10 @@ const ReadingPage = lazy(() => import('./pages/ReadingPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const Gallery = lazy(() => import('./pages/Gallery'));
 const AuthorStudy = lazy(() => import('./pages/AuthorStudy'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
@@ -24,6 +28,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminWorks = lazy(() => import('./pages/admin/AdminWorks'));
 const AdminWorkForm = lazy(() => import('./pages/admin/AdminWorkForm'));
 const AdminComments = lazy(() => import('./pages/admin/AdminComments'));
+const AdminMessages = lazy(() => import('./pages/admin/AdminMessages'));
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 
 export default function App() {
@@ -81,6 +86,30 @@ export default function App() {
                 </Layout>
               }
             />
+            <Route
+              path="/privacy"
+              element={
+                <Layout>
+                  <PrivacyPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/terms"
+              element={
+                <Layout>
+                  <TermsPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <Layout>
+                  <ContactPage />
+                </Layout>
+              }
+            />
 
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
@@ -96,8 +125,18 @@ export default function App() {
               <Route path="works/new" element={<AdminWorkForm />} />
               <Route path="works/:id/edit" element={<AdminWorkForm />} />
               <Route path="comments" element={<AdminComments />} />
+              <Route path="messages" element={<AdminMessages />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
+
+            <Route
+              path="*"
+              element={
+                <Layout>
+                  <NotFoundPage />
+                </Layout>
+              }
+            />
             </Routes>
           </Suspense>
         </ErrorBoundary>

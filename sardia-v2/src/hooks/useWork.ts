@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, ApiError } from '../lib/api';
-import type { Work } from '../types';
+import type { Pagination, Work } from '../types';
 
 export function useWork(id: string | number | undefined) {
   const [work, setWork] = useState<Work | null>(null);
@@ -35,6 +35,7 @@ export function useWork(id: string | number | undefined) {
 
 export function useWorks(page = 1, limit = 10) {
   const [works, setWorks] = useState<Work[]>([]);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,8 +46,10 @@ export function useWorks(page = 1, limit = 10) {
 
     api
       .listWorks(page, limit)
-      .then(({ works }) => {
-        if (!cancelled) setWorks(works);
+      .then(({ works, pagination }) => {
+        if (cancelled) return;
+        setWorks(works);
+        setPagination(pagination);
       })
       .catch((err: ApiError | Error) => {
         if (!cancelled) setError(err.message);
@@ -60,5 +63,5 @@ export function useWorks(page = 1, limit = 10) {
     };
   }, [page, limit]);
 
-  return { works, loading, error };
+  return { works, pagination, loading, error };
 }

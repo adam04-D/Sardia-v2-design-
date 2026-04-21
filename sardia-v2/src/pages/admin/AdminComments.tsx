@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Check, Trash2 } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, MessageSquare, Trash2 } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
+import { EmptyState } from '../../components/ui/EmptyState';
 import type { Comment } from '../../types';
 
 type Tab = 'pending' | 'all';
 
+const PAGE_SIZE = 20;
+
 export default function AdminComments() {
   const [tab, setTab] = useState<Tab>('pending');
   const [comments, setComments] = useState<Comment[]>([]);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -26,7 +30,20 @@ export default function AdminComments() {
     }
   }, []);
 
-  useEffect(() => { load(tab); }, [tab, load]);
+  useEffect(() => { setPage(1); load(tab); }, [tab, load]);
+
+  const totalPages = Math.max(1, Math.ceil(comments.length / PAGE_SIZE));
+  const pageSlice = useMemo(
+    () => comments.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [comments, page],
+  );
+
+  // If the current page becomes empty after a delete, step back
+  useEffect(() => {
+    if (page > 1 && pageSlice.length === 0 && comments.length > 0) {
+      setPage((p) => Math.max(1, p - 1));
+    }
+  }, [page, pageSlice.length, comments.length]);
 
   const handleApprove = async (c: Comment) => {
     setBusyId(c.id);
@@ -81,10 +98,18 @@ export default function AdminComments() {
       ) : error ? (
         <p className="font-sans text-red-600">{error}</p>
       ) : comments.length === 0 ? (
-        <p className="font-sans text-stone-400">لا توجد تعليقات.</p>
+        <EmptyState
+          icon={MessageSquare}
+          title={tab === 'pending' ? 'لا توجد تعليقات بانتظار الموافقة' : 'لا توجد تعليقات'}
+          description={
+            tab === 'pending'
+              ? 'ستظهر هنا التعليقات الجديدة فور وصولها.'
+              : 'لم يترك أي قارئ تعقيباً حتى الآن.'
+          }
+        />
       ) : (
         <ul className="space-y-3">
-          {comments.map((c) => (
+          {pageSlice.map((c) => (
             <li key={c.id} className="bg-white rounded-xl border border-stone-100 p-5">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 min-w-0">
@@ -133,6 +158,32 @@ export default function AdminComments() {
             </li>
           ))}
         </ul>
+      )}
+
+      {!loading && !error && totalPages > 1 && (
+        <nav className="flex items-center justify-between" aria-label="تصفّح التعليقات">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="inline-flex items-center gap-1 px-4 py-2 rounded-lg border border-stone-200 font-sans text-sm text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronRight size={14} aria-hidden="true" />
+            السابق
+          </button>
+          <span className="font-sans text-sm text-stone-500">
+            صفحة {page} من {totalPages} — {comments.length} تعليق
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="inline-flex items-center gap-1 px-4 py-2 rounded-lg border border-stone-200 font-sans text-sm text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            التالي
+            <ChevronLeft size={14} aria-hidden="true" />
+          </button>
+        </nav>
       )}
     </div>
   );

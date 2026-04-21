@@ -17,6 +17,7 @@ export interface Work {
   image_url: string | null;
   image_public_id?: string | null;
   likes_count: number;
+  views_count?: number;
   created_at: string;
   updated_at?: string;
   comments_count?: number;
@@ -51,7 +52,11 @@ export interface DashboardStats {
     pendingComments: number;
     approvedComments: number;
     totalLikes: number;
+    totalViews: number;
+    unreadMessages: number;
+    totalMessages: number;
   };
-  recentWorks: Array<Pick<Work, 'id' | 'title' | 'likes_count' | 'created_at'>>;
+  topLikedWork: Pick<Work, 'id' | 'title' | 'likes_count'> | null;
+  recentWorks: Array<Pick<Work, 'id' | 'title' | 'likes_count' | 'views_count' | 'created_at'>>;
   recentPending: Comment[];
 }

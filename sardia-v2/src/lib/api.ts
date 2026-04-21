@@ -28,7 +28,11 @@ async function request<T>(path: string, opts: RequestOpts = {}): Promise<T> {
     if (token) finalHeaders['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, { ...rest, headers: finalHeaders });
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...rest,
+    headers: finalHeaders,
+    credentials: 'include', // send httpOnly auth cookie
+  });
   const body = (await res.json().catch(() => ({}))) as ApiEnvelope<T> & { message?: string };
 
   if (!res.ok || body.success === false) {
@@ -53,11 +57,28 @@ export const api = {
   getWork: (id: string | number) => request<{ work: Work }>(`/api/works/${id}`),
   likeWork: (id: string | number) =>
     request<{ likes_count: number }>(`/api/works/${id}/like`, { method: 'POST' }),
-  addComment: (id: string | number, payload: { content: string; author_name: string }) =>
+  recordView: (id: string | number) =>
+    request<{ views_count: number; counted: boolean }>(`/api/works/${id}/view`, { method: 'POST' }),
+  addComment: (id: string | number, payload: { content: string; author_name: string; website?: string }) =>
     request<{ comment: Comment }>(`/api/works/${id}/comments`, {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+
+  // Contact
+  submitContact: (payload: { name: string; email: string; message: string; website?: string }) =>
+    request<null>(`/api/contact`, { method: 'POST', body: JSON.stringify(payload) }),
+
+  // Admin — contact messages
+  listMessages: () =>
+    request<{ messages: Array<{ id: number; name: string; email: string; message: string; is_read: boolean; created_at: string }> }>(
+      `/api/admin/messages`,
+      { auth: true },
+    ),
+  markMessageRead: (id: number) =>
+    request<{ message: unknown }>(`/api/admin/messages/${id}/read`, { method: 'PUT', auth: true }),
+  deleteMessage: (id: number) =>
+    request<void>(`/api/admin/messages/${id}`, { method: 'DELETE', auth: true }),
 
   // Auth
   login: (username: string, password: string) =>
@@ -66,6 +87,7 @@ export const api = {
       body: JSON.stringify({ username, password }),
     }),
   me: () => request<{ user: AdminUser }>(`/api/auth/me`, { auth: true }),
+  logout: () => request<null>(`/api/auth/logout`, { method: 'POST' }),
   changePassword: (currentPassword: string, newPassword: string) =>
     request<void>(`/api/auth/password`, {
       method: 'PUT',

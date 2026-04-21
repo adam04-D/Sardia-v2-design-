@@ -7,27 +7,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Auth state lives in an httpOnly cookie. Ping /me to hydrate on mount;
+  // if there's no cookie we just get a 401 and move on.
   useEffect(() => {
     let cancelled = false;
-    const token = tokenStore.get();
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     api.me()
       .then((d) => { if (!cancelled) setUser(d.user); })
-      .catch(() => { tokenStore.clear(); })
+      .catch(() => { /* not logged in — fine */ })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
   const login = async (username: string, password: string) => {
     const { token, user } = await api.login(username, password);
-    tokenStore.set(token);
+    // Cookie is now set server-side. Keep token in localStorage as a
+    // transitional fallback so legacy admin tabs still work.
+    if (token) tokenStore.set(token);
     setUser(user);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try { await api.logout(); } catch { /* best-effort */ }
     tokenStore.clear();
     setUser(null);
   };

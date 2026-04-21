@@ -4,7 +4,7 @@
  */
 
 import { motion, useScroll, useTransform } from 'motion/react';
-import { BookOpen, Bookmark, Headphones, ArrowLeft } from 'lucide-react';
+import { BookOpen, Bookmark, Headphones, ArrowLeft, Library } from 'lucide-react';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { RevealText } from '../components/RevealText';
@@ -12,6 +12,9 @@ import { useWorks } from '../hooks/useWork';
 import Seo from '../components/Seo';
 import { Eyebrow } from '../components/ui/Eyebrow';
 import { SectionHeading } from '../components/ui/SectionHeading';
+import { EmptyState } from '../components/ui/EmptyState';
+import { BentoSkeleton, WorkCardSkeleton } from '../components/ui/Skeleton';
+import { cdnImage, cdnSrcSet } from '../lib/img';
 import type { Work } from '../types';
 
 const FALLBACK_IMAGE =
@@ -53,13 +56,24 @@ export default function Gallery() {
       </header>
 
       {loading && (
-        <p className="font-sans text-text-muted text-center py-20">جاري تحميل الأعمال...</p>
+        <>
+          <BentoSkeleton />
+          <section className="mb-40">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {[0, 1, 2].map((i) => <WorkCardSkeleton key={i} />)}
+            </div>
+          </section>
+        </>
       )}
       {error && !loading && (
         <p className="font-sans text-red-500 text-center py-20">تعذر تحميل الأعمال: {error}</p>
       )}
       {!loading && !error && works.length === 0 && (
-        <p className="font-sans text-text-muted text-center py-20">لا توجد أعمال منشورة بعد.</p>
+        <EmptyState
+          icon={Library}
+          title="لا توجد أعمال منشورة بعد"
+          description="ستظهر الإصدارات الجديدة هنا فور نشرها. عُد قريباً لاستكشاف المكتبة."
+        />
       )}
 
       {/* Bento Gallery Grid */}
@@ -79,8 +93,11 @@ export default function Gallery() {
                 <div className="absolute inset-0 z-0">
                   <motion.img
                     style={{ y: yImage }}
-                    src={featured.image_url ?? FALLBACK_IMAGE}
+                    src={cdnImage(featured.image_url, 1600) || FALLBACK_IMAGE}
+                    srcSet={cdnSrcSet(featured.image_url, [800, 1200, 1600, 2000])}
+                    sizes="(min-width: 768px) 50vw, 100vw"
                     alt={featured.title}
+                    loading="lazy"
                     className="w-full h-[120%] object-cover transition-transform duration-1000 group-hover:scale-105 opacity-30 grayscale group-hover:grayscale-0 relative -top-[10%]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-transparent"></div>
@@ -227,7 +244,9 @@ export default function Gallery() {
                   <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-8 bg-stone-100 relative">
                     <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply"></div>
                     <img
-                      src={article.image_url ?? FALLBACK_IMAGE}
+                      src={cdnImage(article.image_url, 800) || FALLBACK_IMAGE}
+                      srcSet={cdnSrcSet(article.image_url, [400, 600, 800, 1200])}
+                      sizes="(min-width: 768px) 33vw, 100vw"
                       alt={article.title}
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-110"

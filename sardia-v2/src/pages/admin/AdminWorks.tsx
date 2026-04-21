@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Heart, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Plus, Pencil, Trash2, Heart, Eye, ChevronRight, ChevronLeft, BookOpen, Search, X } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
+import { EmptyState } from '../../components/ui/EmptyState';
 import type { Pagination, Work } from '../../types';
 
 const PAGE_SIZE = 20;
@@ -13,6 +14,7 @@ export default function AdminWorks() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [query, setQuery] = useState('');
 
   const load = useCallback(async (p: number) => {
     setLoading(true);
@@ -29,6 +31,15 @@ export default function AdminWorks() {
   }, []);
 
   useEffect(() => { load(page); }, [load, page]);
+
+  const filteredWorks = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return works;
+    return works.filter((w) =>
+      w.title.toLowerCase().includes(q) ||
+      (w.excerpt ?? '').toLowerCase().includes(q)
+    );
+  }, [works, query]);
 
   const handleDelete = async (w: Work) => {
     if (!confirm(`حذف «${w.title}»؟ هذا الإجراء نهائي.`)) return;
@@ -66,26 +77,70 @@ export default function AdminWorks() {
         </Link>
       </header>
 
+      {!loading && !error && works.length > 0 && (
+        <div className="relative max-w-md">
+          <Search size={16} aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="ابحث بالعنوان أو المقتطف..."
+            className="w-full pr-10 pl-10 py-2.5 rounded-lg border border-stone-200 bg-white font-sans text-sm focus:outline-none focus:border-accent transition-colors"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              aria-label="مسح البحث"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+            >
+              <X size={14} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      )}
+
       {loading ? (
         <p className="font-sans text-stone-500">جاري التحميل...</p>
       ) : error ? (
         <p className="font-sans text-red-600">{error}</p>
       ) : works.length === 0 ? (
-        <p className="font-sans text-stone-400">لا توجد أعمال بعد.</p>
+        <EmptyState
+          icon={BookOpen}
+          title="لا توجد أعمال بعد"
+          description="ابدأ بإضافة أول عمل لعرضه في المكتبة."
+          action={
+            <Link
+              to="/admin/works/new"
+              className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-sans text-sm font-bold hover:bg-accent transition-colors"
+            >
+              <Plus size={16} aria-hidden="true" />
+              عمل جديد
+            </Link>
+          }
+        />
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
-            <table className="w-full text-right">
+          <div className="bg-white rounded-xl border border-stone-100 overflow-x-auto">
+            <table className="w-full min-w-[560px] text-right">
               <thead className="bg-stone-50 text-xs font-sans font-bold text-stone-500 uppercase">
                 <tr>
                   <th className="px-4 py-3">العنوان</th>
                   <th className="px-4 py-3 w-24">إعجابات</th>
+                  <th className="px-4 py-3 w-24">مشاهدات</th>
                   <th className="px-4 py-3 w-32">تاريخ الإضافة</th>
                   <th className="px-4 py-3 w-32">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
-                {works.map((w) => (
+                {filteredWorks.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-10 text-center font-sans text-sm text-stone-400">
+                      لا نتائج مطابقة لـ «{query}».
+                    </td>
+                  </tr>
+                )}
+                {filteredWorks.map((w) => (
                   <tr key={w.id} className="border-t border-stone-100">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -97,6 +152,9 @@ export default function AdminWorks() {
                     </td>
                     <td className="px-4 py-3 font-sans text-sm text-stone-500">
                       <span className="inline-flex items-center gap-1"><Heart size={12} aria-hidden="true" /> {w.likes_count}</span>
+                    </td>
+                    <td className="px-4 py-3 font-sans text-sm text-stone-500">
+                      <span className="inline-flex items-center gap-1"><Eye size={12} aria-hidden="true" /> {w.views_count ?? 0}</span>
                     </td>
                     <td className="px-4 py-3 font-sans text-xs text-stone-400">
                       {new Date(w.created_at).toLocaleDateString('ar')}
@@ -126,7 +184,7 @@ export default function AdminWorks() {
             </table>
           </div>
 
-          {pagination && pagination.totalPages > 1 && (
+          {pagination && pagination.totalPages > 1 && !query && (
             <nav className="flex items-center justify-between" aria-label="تصفّح الصفحات">
               <button
                 type="button"

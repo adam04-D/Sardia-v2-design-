@@ -11,6 +11,8 @@ import { RevealText } from '../components/RevealText';
 import Seo from '../components/Seo';
 import { Eyebrow } from '../components/ui/Eyebrow';
 import { SectionHeading } from '../components/ui/SectionHeading';
+import { BentoSkeleton } from '../components/ui/Skeleton';
+import { cdnImage, cdnSrcSet } from '../lib/img';
 import { api } from '../lib/api';
 import { useWorks } from '../hooks/useWork';
 import type { Work } from '../types';
@@ -39,7 +41,7 @@ export default function HomePage() {
   const { scrollYProgress: libScroll } = useScroll({ target: libraryRef, offset: ["start start", "end start"] });
   const yLibImage = useTransform(libScroll, [0, 1], ["0%", "15%"]);
 
-  const { works: bentoWorks } = useWorks(1, 4);
+  const { works: bentoWorks, loading: bentoLoading } = useWorks(1, 4);
   const featured = bentoWorks[0];
   const medium = bentoWorks[1];
   const small1 = bentoWorks[2];
@@ -191,6 +193,9 @@ export default function HomePage() {
           </header>
 
           {/* Bento Gallery Grid */}
+          {bentoLoading && bentoWorks.length === 0 ? (
+            <BentoSkeleton />
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:grid-rows-2 mb-40">
 
             {/* Featured Card (Large) */}
@@ -208,8 +213,11 @@ export default function HomePage() {
                   <div className="absolute inset-0 z-0">
                     <motion.img
                       style={{ y: yLibImage }}
-                      src={featured.image_url ?? FALLBACK_IMAGE}
+                      src={cdnImage(featured.image_url, 1600) || FALLBACK_IMAGE}
+                      srcSet={cdnSrcSet(featured.image_url, [800, 1200, 1600, 2000])}
+                      sizes="(min-width: 768px) 50vw, 100vw"
                       alt={featured.title}
+                      loading="lazy"
                       className="w-full h-[120%] object-cover transition-transform duration-1000 group-hover:scale-105 opacity-30 grayscale group-hover:grayscale-0 relative -top-[10%]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-transparent"></div>
@@ -341,6 +349,7 @@ export default function HomePage() {
               </Link>
             )}
           </div>
+          )}
 
           {/* Secondary Feed */}
           <div className="mb-20">
@@ -404,7 +413,9 @@ function LatestWorks() {
             <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-8 bg-stone-100 relative">
               <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply" />
               <img
-                src={w.image_url ?? FALLBACK_IMAGE}
+                src={cdnImage(w.image_url, 800) || FALLBACK_IMAGE}
+                srcSet={cdnSrcSet(w.image_url, [400, 600, 800, 1200])}
+                sizes="(min-width: 768px) 33vw, 100vw"
                 alt={w.title}
                 loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-110"

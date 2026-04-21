@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, MessageSquare, Clock, Heart } from 'lucide-react';
+import { BookOpen, MessageSquare, Clock, Heart, Mail, Trophy, Eye } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
 import type { DashboardStats } from '../../types';
 
@@ -23,10 +23,13 @@ export default function AdminDashboard() {
   if (!data) return null;
 
   const cards = [
-    { label: 'الأعمال', value: data.stats.totalWorks, icon: BookOpen, color: 'text-accent' },
-    { label: 'التعليقات المعتمدة', value: data.stats.approvedComments, icon: MessageSquare, color: 'text-emerald-600' },
-    { label: 'بانتظار الموافقة', value: data.stats.pendingComments, icon: Clock, color: 'text-amber-600' },
-    { label: 'إجمالي الإعجابات', value: data.stats.totalLikes, icon: Heart, color: 'text-rose-600' },
+    { label: 'الأعمال', value: data.stats.totalWorks, icon: BookOpen, color: 'text-accent', to: '/admin/works' },
+    { label: 'التعليقات المعتمدة', value: data.stats.approvedComments, icon: MessageSquare, color: 'text-emerald-600', to: '/admin/comments' },
+    { label: 'بانتظار الموافقة', value: data.stats.pendingComments, icon: Clock, color: 'text-amber-600', to: '/admin/comments' },
+    { label: 'إجمالي الإعجابات', value: data.stats.totalLikes, icon: Heart, color: 'text-rose-600', to: '/admin/works' },
+    { label: 'إجمالي المشاهدات', value: data.stats.totalViews, icon: Eye, color: 'text-indigo-600', to: '/admin/works' },
+    { label: 'رسائل جديدة', value: data.stats.unreadMessages, icon: Mail, color: 'text-sky-600', to: '/admin/messages' },
+    { label: 'إجمالي الرسائل', value: data.stats.totalMessages, icon: Mail, color: 'text-stone-500', to: '/admin/messages' },
   ];
 
   return (
@@ -36,15 +39,42 @@ export default function AdminDashboard() {
         <p className="font-sans text-sm text-stone-500 mt-1">نظرة عامة على نشاط الموقع</p>
       </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {cards.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white rounded-xl border border-stone-100 p-5 shadow-sm">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {cards.map(({ label, value, icon: Icon, color, to }) => (
+          <Link
+            key={label}
+            to={to}
+            className="bg-white rounded-xl border border-stone-100 p-5 shadow-sm hover:border-accent/30 hover:shadow-md transition-all"
+          >
             <Icon size={20} aria-hidden="true" className={color} />
             <p className="font-sans text-xs text-stone-500 mt-3">{label}</p>
             <p className="font-serif text-3xl font-bold text-primary mt-1">{value}</p>
-          </div>
+          </Link>
         ))}
       </div>
+
+      {data.topLikedWork && data.topLikedWork.likes_count > 0 && (
+        <section className="bg-gradient-to-l from-accent/10 to-transparent rounded-xl border border-accent/20 p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+              <Trophy size={22} className="text-accent" aria-hidden="true" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-sans text-xs text-stone-500 uppercase tracking-wider mb-1">الأكثر إعجاباً</p>
+              <Link
+                to={`/reading/${data.topLikedWork.id}`}
+                className="font-serif text-2xl font-bold text-primary hover:text-accent transition-colors"
+              >
+                {data.topLikedWork.title}
+              </Link>
+              <p className="font-sans text-sm text-stone-500 mt-1 flex items-center gap-2">
+                <Heart size={14} className="text-rose-600" aria-hidden="true" />
+                {data.topLikedWork.likes_count} إعجاب
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         <section className="bg-white rounded-xl border border-stone-100 p-6">

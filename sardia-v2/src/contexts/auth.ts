@@ -5,7 +5,7 @@ export type AuthState = {
   user: AdminUser | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthState | null>(null);

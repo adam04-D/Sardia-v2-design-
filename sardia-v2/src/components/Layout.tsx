@@ -223,9 +223,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </li>
                 <li>
-                  <a href="mailto:adamdaoudi04@gmail.com" className="block py-3 font-serif text-lg text-accent hover:text-primary transition-colors">
+                  <Link to="/contact" className="block py-3 font-serif text-lg text-accent hover:text-primary transition-colors">
                     تواصل معي
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </motion.nav>
@@ -284,9 +284,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="space-y-6">
                 <h4 className="font-serif text-lg text-white mb-4">المساعدة</h4>
                 <ul className="space-y-4 font-sans text-sm text-white/70">
-                  <li><a href="mailto:adamdaoudi04@gmail.com" className="hover:text-white transition-colors">التواصل الأكاديمي</a></li>
-                  <li><a href="mailto:adamdaoudi04@gmail.com" className="hover:text-white transition-colors">دعم القراء</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">الأسئلة الشائعة</a></li>
+                  <li><Link to="/contact" className="hover:text-white transition-colors">تواصل معنا</Link></li>
+                  <li><a href="mailto:adamdaoudi04@gmail.com" className="hover:text-white transition-colors">البريد الإلكتروني</a></li>
                 </ul>
               </div>
 
@@ -296,8 +295,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-xs text-white/50">
               <p>© 2026 سرديا. جميع الحقوق محفوظة. تم تطوير الموقع بواسطة آدم داودي.</p>
               <div className="flex gap-6">
-                <a href="#" className="hover:text-white transition-colors">شروط الاستخدام</a>
-                <a href="#" className="hover:text-white transition-colors">سياسة الخصوصية</a>
+                <Link to="/terms" className="hover:text-white transition-colors">شروط الاستخدام</Link>
+                <Link to="/privacy" className="hover:text-white transition-colors">سياسة الخصوصية</Link>
               </div>
             </div>
 
