@@ -5,6 +5,20 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Proxy dynamic feeds from the backend under the canonical frontend domain.
+# Must come BEFORE the SPA fallback so the catch-all doesn't swallow them.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "https://sardia-backend-sql.onrender.com/sitemap.xml"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/rss.xml"
+  to = "https://sardia-backend-sql.onrender.com/rss.xml"
+  status = 200
+  force = true
+
 # SPA fallback — every route renders index.html so client router can handle it
 [[redirects]]
   from = "/*"
