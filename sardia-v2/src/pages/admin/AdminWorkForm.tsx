@@ -1,7 +1,10 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ArrowRight, Upload } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export default function AdminWorkForm() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +20,26 @@ export default function AdminWorkForm() {
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const picked = e.target.files?.[0] ?? null;
+    if (!picked) {
+      setFile(null);
+      return;
+    }
+    if (!ACCEPTED_IMAGE_TYPES.includes(picked.type)) {
+      setError('نوع الملف غير مدعوم. استخدم JPG أو PNG أو WEBP أو GIF.');
+      e.target.value = '';
+      return;
+    }
+    if (picked.size > MAX_IMAGE_BYTES) {
+      setError('حجم الصورة يتجاوز 5 ميغابايت.');
+      e.target.value = '';
+      return;
+    }
+    setError(null);
+    setFile(picked);
+  };
 
   useEffect(() => {
     if (!isEdit) return;
@@ -129,11 +152,14 @@ export default function AdminWorkForm() {
             <input
               id="image"
               type="file"
-              accept="image/*"
+              accept={ACCEPTED_IMAGE_TYPES.join(',')}
               className="hidden"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={handleFileChange}
             />
           </label>
+          <p className="font-sans text-xs text-stone-400 mt-2">
+            JPG / PNG / WEBP / GIF — الحد الأقصى 5 ميغابايت.
+          </p>
         </div>
 
         <div className="flex items-center gap-3 pt-4 border-t border-stone-100">

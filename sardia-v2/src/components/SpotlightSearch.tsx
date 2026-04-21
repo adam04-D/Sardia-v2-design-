@@ -5,30 +5,63 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Command, CornerDownLeft, ArrowUp, ArrowDown, BookOpen, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorks } from '../hooks/useWork';
+import { api, ApiError } from '../lib/api';
+import type { Work } from '../types';
 
 export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showQuickLook, setShowQuickLook] = useState(false);
   const navigate = useNavigate();
-  const { works, loading, error } = useWorks(1, 50);
+
+  // Default list (no query) — newest 20 works
+  const { works: recent, loading: recentLoading, error: recentError } = useWorks(1, 20);
+
+  // Server-side search (debounced) when query has >=2 chars
+  const [searchResults, setSearchResults] = useState<Work[] | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const q = query.trim();
-  const filteredWorks = q
-    ? works.filter((w) =>
-        w.title.includes(q) ||
-        (w.excerpt ?? '').includes(q),
-      )
-    : works;
 
   useEffect(() => {
     setSelectedIndex(0);
   }, [query]);
 
-  const handleSelect = () => {
+  useEffect(() => {
+    if (q.length < 2) {
+      setSearchResults(null);
+      setSearching(false);
+      setSearchError(null);
+      return;
+    }
+    let cancelled = false;
+    setSearching(true);
+    setSearchError(null);
+    const t = setTimeout(() => {
+      api.searchWorks(q)
+        .then((d) => { if (!cancelled) setSearchResults(d.works); })
+        .catch((e) => {
+          if (cancelled) return;
+          setSearchError(e instanceof ApiError ? e.message : 'فشل البحث');
+          setSearchResults([]);
+        })
+        .finally(() => { if (!cancelled) setSearching(false); });
+    }, 200);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [q]);
+
+  const filteredWorks = useMemo(
+    () => (q.length >= 2 ? (searchResults ?? []) : recent),
+    [q, searchResults, recent],
+  );
+  const loading = q.length >= 2 ? searching : recentLoading;
+  const error = q.length >= 2 ? searchError : recentError;
+
+  const handleSelect = useCallback(() => {
     const target = filteredWorks[selectedIndex];
     if (target) {
       navigate(`/reading/${target.id}`);
@@ -36,13 +69,13 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
       setQuery('');
       setShowQuickLook(false);
     }
-  };
+  }, [filteredWorks, selectedIndex, navigate, onClose]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     onClose();
     setQuery('');
     setShowQuickLook(false);
-  };
+  }, [onClose]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -78,7 +111,7 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, filteredWorks, selectedIndex, showQuickLook]);
+  }, [isOpen, filteredWorks, selectedIndex, showQuickLook, handleClose, handleSelect]);
 
   return (
     <AnimatePresence>

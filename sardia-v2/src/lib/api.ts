@@ -1,6 +1,6 @@
 import type { AdminUser, ApiEnvelope, Comment, DashboardStats, Pagination, Work } from '../types';
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:5000';
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:5001';
 const TOKEN_KEY = 'sardia_admin_token';
 
 export const tokenStore = {
@@ -47,7 +47,7 @@ export const api = {
   listWorks: (page = 1, limit = 10) =>
     request<WorksListResponse>(`/api/works?page=${page}&limit=${limit}`),
   searchWorks: (q: string) =>
-    request<{ works: Work[]; query: string; count: number }>(
+    request<{ works: Work[]; query: string; count: number; pagination?: Pagination }>(
       `/api/works/search?q=${encodeURIComponent(q)}`,
     ),
   getWork: (id: string | number) => request<{ work: Work }>(`/api/works/${id}`),

@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, BookOpen, MessageSquare, Settings, LogOut, ExternalLink } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/auth';
 
 const navItems = [
   { to: '/admin', end: true, label: 'لوحة التحكم', icon: LayoutDashboard },

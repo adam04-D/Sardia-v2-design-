@@ -11,12 +11,16 @@ import { RevealText } from '../components/RevealText';
 import Seo from '../components/Seo';
 import { Eyebrow } from '../components/ui/Eyebrow';
 import { SectionHeading } from '../components/ui/SectionHeading';
+import { useWorks } from '../hooks/useWork';
+
+const PUBLICATION_FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop';
 
 export default function AuthorStudy() {
   const heroRef = useRef(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const yImage = useTransform(heroScroll, [0, 1], ["0%", "20%"]);
   const scaleImage = useTransform(heroScroll, [0, 1], [1, 1.05]);
+  const { works: publications } = useWorks(1, 4);
 
   return (
     <>
@@ -38,7 +42,13 @@ export default function AuthorStudy() {
             <motion.img
               style={{ y: useTransform(heroScroll, [0, 1], ["0%", "15%"]), scale: scaleImage }}
               src="/adam.webp"
-              alt="Author"
+              onError={(e) => {
+                const img = e.currentTarget;
+                if (img.src.endsWith('/adam.webp')) {
+                  img.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop';
+                }
+              }}
+              alt="Adam Daoudi"
               className="w-full h-full object-cover object-top grayscale hover:grayscale-0 transition-all duration-1000 relative"
             />
           </div>
@@ -86,68 +96,65 @@ export default function AuthorStudy() {
             transition={{ delay: 1, duration: 0.8 }}
             className="flex flex-wrap gap-4 pt-6"
           >
-            <button className="group relative overflow-hidden bg-primary text-surface px-8 py-4 rounded-full font-sans text-sm font-bold transition-all hover:shadow-xl hover:shadow-primary/20 flex items-center gap-3">
+            <a
+              href="mailto:adamdaoudi04@gmail.com"
+              className="group relative overflow-hidden bg-primary text-surface px-8 py-4 rounded-full font-sans text-sm font-bold transition-all hover:shadow-xl hover:shadow-primary/20 flex items-center gap-3"
+            >
               <span className="absolute inset-0 w-full h-full bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
               <span className="relative z-10 flex items-center gap-3">
                 <Mail size={18} />
                 تواصل معي
               </span>
-            </button>
+            </a>
           </motion.div>
         </div>
       </section>
 
       {/* Publications Section */}
-      <section className="space-y-16 mb-40">
-        <SectionHeading title="أحدث الإصدارات" viewAllTo="/" />
+      {publications.length > 0 && (
+        <section className="space-y-16 mb-40">
+          <SectionHeading title="أحدث الإصدارات" viewAllTo="/gallery" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          {[
-            {
-              title: "ظلال المخطوطة القديمة",
-              category: "رواية • 2023",
-              desc: "رحلة في أعماق التاريخ الأندلسي، حيث تتقاطع الأقدار مع الكلمات الضائعة في زوايا المكتبات المنسية.",
-              views: "12 ألف",
-              likes: "800",
-              img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop"
-            },
-            {
-              title: "فلسفة الحبر والورق",
-              category: "دراسات • 2022",
-              desc: "دراسة نقدية حول تأثير الكتابة الورقية في عصر الرقمنة، وكيف يتشكل وعينا من خلال ملمس الكتاب.",
-              views: "8 آلاف",
-              likes: "450",
-              img: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=800&auto=format&fit=crop"
-            }
-          ].map((pub, i) => (
-            <Link to="/reading" key={i}>
-            <motion.article
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: i * 0.2, ease: "easeOut" }}
-              className="flex flex-col sm:flex-row gap-8 group cursor-pointer"
-            >
-              <div className="w-full sm:w-52 shrink-0 overflow-hidden rounded-[2rem] shadow-xl aspect-[2/3] bg-stone-100 relative">
-                <div className="absolute inset-0 bg-accent/20 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply"></div>
-                <img src={pub.img} alt={pub.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-[0.16,1,0.3,1]" />
-              </div>
-              <div className="flex flex-col justify-center space-y-5">
-                <span className="font-sans text-[10px] font-bold text-accent tracking-[0.2em]">{pub.category}</span>
-                <h4 className="font-serif text-3xl font-bold text-text-main group-hover:text-accent transition-colors duration-300">{pub.title}</h4>
-                <p className="font-sans text-base text-text-muted leading-relaxed line-clamp-3">
-                  {pub.desc}
-                </p>
-                <div className="pt-4 flex items-center gap-6 text-sm font-sans font-medium text-stone-400">
-                  <span className="flex items-center gap-2"><Eye size={16} className="text-accent/60" /> {pub.views}</span>
-                  <span className="flex items-center gap-2"><Heart size={16} className="text-accent/60" /> {pub.likes}</span>
-                </div>
-              </div>
-            </motion.article>
-            </Link>
-          ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+            {publications.slice(0, 4).map((pub, i) => (
+              <Link to={`/reading/${pub.id}`} key={pub.id}>
+                <motion.article
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.8, delay: i * 0.2, ease: "easeOut" }}
+                  className="flex flex-col sm:flex-row gap-8 group cursor-pointer"
+                >
+                  <div className="w-full sm:w-52 shrink-0 overflow-hidden rounded-[2rem] shadow-xl aspect-[2/3] bg-stone-100 relative">
+                    <div className="absolute inset-0 bg-accent/20 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply"></div>
+                    <img
+                      src={pub.image_url ?? PUBLICATION_FALLBACK_IMAGE}
+                      alt={pub.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-[0.16,1,0.3,1]"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center space-y-5">
+                    <span className="font-sans text-[10px] font-bold text-accent tracking-[0.2em]">
+                      {new Date(pub.created_at).toLocaleDateString('ar', { year: 'numeric', month: 'long' })}
+                    </span>
+                    <h4 className="font-serif text-3xl font-bold text-text-main group-hover:text-accent transition-colors duration-300">{pub.title}</h4>
+                    {pub.excerpt && (
+                      <p className="font-sans text-base text-text-muted leading-relaxed line-clamp-3">
+                        {pub.excerpt}
+                      </p>
+                    )}
+                    <div className="pt-4 flex items-center gap-6 text-sm font-sans font-medium text-stone-400">
+                      <span className="flex items-center gap-2"><Eye size={16} className="text-accent/60" aria-hidden="true" /> {pub.comments_count ?? 0}</span>
+                      <span className="flex items-center gap-2"><Heart size={16} className="text-accent/60" aria-hidden="true" /> {pub.likes_count}</span>
+                    </div>
+                  </div>
+                </motion.article>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Quote Section */}
       <motion.section

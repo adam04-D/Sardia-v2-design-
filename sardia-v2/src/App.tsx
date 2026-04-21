@@ -8,6 +8,7 @@ import { lazy, Suspense } from 'react';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import RouteFallback from './components/RouteFallback';
+import ErrorBoundary from './components/ErrorBoundary';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
@@ -29,8 +30,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
+        <ErrorBoundary>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
             <Route
               path="/"
               element={
@@ -96,8 +98,9 @@ export default function App() {
               <Route path="comments" element={<AdminComments />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
-          </Routes>
-        </Suspense>
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   );

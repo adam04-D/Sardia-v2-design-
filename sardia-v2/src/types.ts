@@ -6,6 +6,7 @@ export interface Comment {
   work_id: number;
   created_at: string;
   updated_at: string;
+  work?: { id: number; title: string };
 }
 
 export interface Work {
@@ -52,5 +53,5 @@ export interface DashboardStats {
     totalLikes: number;
   };
   recentWorks: Array<Pick<Work, 'id' | 'title' | 'likes_count' | 'created_at'>>;
-  recentPending: Array<Comment & { work?: { id: number; title: string } }>;
+  recentPending: Comment[];
 }

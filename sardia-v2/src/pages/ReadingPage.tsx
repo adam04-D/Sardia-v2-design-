@@ -158,9 +158,10 @@ export default function ReadingPage() {
   const { work, loading, error } = useWork(id);
   const [comments, setComments] = useState<WorkComment[]>([]);
 
-  // Sync local comments when work loads (so optimistic updates stick)
+  // Keyed on work?.id only so optimistic comment updates aren't overwritten
   useEffect(() => {
     setComments(work?.comments ?? []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [work?.id]);
 
   // Always scroll to top when opening a new reading page

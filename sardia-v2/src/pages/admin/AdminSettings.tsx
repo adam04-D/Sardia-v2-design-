@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { KeyRound, ShieldCheck } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/auth';
 
 export default function AdminSettings() {
   const { user } = useAuth();

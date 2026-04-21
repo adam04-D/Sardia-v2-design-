@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, Trash2 } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
 import type { Comment } from '../../types';
@@ -99,6 +100,14 @@ export default function AdminComments() {
                     </span>
                   </div>
                   <p className="font-sans text-sm text-stone-700 whitespace-pre-wrap">{c.content}</p>
+                  {c.work && (
+                    <p className="font-sans text-xs text-stone-400 mt-2">
+                      على{' '}
+                      <Link to={`/reading/${c.work.id}`} className="text-primary hover:underline">
+                        «{c.work.title}»
+                      </Link>
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   {!c.is_approved && (

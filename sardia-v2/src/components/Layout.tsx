@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion, useScroll, useTransform } from 'motion/react';
-import { Search, Menu, Instagram, Mail, Twitter, Youtube } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
+import { Search, Menu, X, Instagram, Mail, Twitter, Youtube } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
 
@@ -36,7 +36,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const [activeSection, setActiveSection] = useState('author');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
 
   // Track scroll for header padding
   useEffect(() => {
@@ -174,13 +180,57 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Search size={20} strokeWidth={1.5} aria-hidden="true" />
             </button>
             <button
-              aria-label="القائمة"
+              onClick={() => setIsMenuOpen((v) => !v)}
+              aria-label={isMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+              aria-expanded={isMenuOpen}
               className="p-2.5 hover:bg-accent/5 rounded-full transition-all duration-300 text-accent md:hidden"
             >
-              <Menu size={20} strokeWidth={1.5} aria-hidden="true" />
+              {isMenuOpen ? <X size={20} strokeWidth={1.5} aria-hidden="true" /> : <Menu size={20} strokeWidth={1.5} aria-hidden="true" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.nav
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="md:hidden border-t border-accent/10 bg-white/90 backdrop-blur-lg"
+              aria-label="قائمة التنقل"
+            >
+              <ul className="flex flex-col px-6 py-4 space-y-1">
+                <li>
+                  <Link to="/" className="block py-3 font-serif text-lg text-text-main hover:text-accent transition-colors">
+                    الرئيسية
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/gallery" className="block py-3 font-serif text-lg text-text-main hover:text-accent transition-colors">
+                    المكتبة
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/author" className="block py-3 font-serif text-lg text-text-main hover:text-accent transition-colors">
+                    مكتب المؤلف
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about" className="block py-3 font-serif text-lg text-text-main hover:text-accent transition-colors">
+                    عن المؤلف
+                  </Link>
+                </li>
+                <li>
+                  <a href="mailto:adamdaoudi04@gmail.com" className="block py-3 font-serif text-lg text-accent hover:text-primary transition-colors">
+                    تواصل معي
+                  </a>
+                </li>
+              </ul>
+            </motion.nav>
+          )}
+        </AnimatePresence>
       </motion.header>
 
       <main id="main-content" className={`${isReading ? 'pt-0' : ''}`}>
@@ -207,7 +257,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <a href="#" aria-label="يوتيوب" className="text-white/70 hover:text-white transition-colors duration-300">
                     <Youtube size={20} aria-hidden="true" />
                   </a>
-                  <a href="mailto:adamdaoudi@gmail.com" aria-label="البريد الإلكتروني" className="text-white/70 hover:text-white transition-colors duration-300">
+                  <a href="mailto:adamdaoudi04@gmail.com" aria-label="البريد الإلكتروني" className="text-white/70 hover:text-white transition-colors duration-300">
                     <Mail size={20} aria-hidden="true" />
                   </a>
                 </div>
@@ -225,18 +275,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="space-y-6">
                 <h4 className="font-serif text-lg text-white mb-4">المكتبة</h4>
                 <ul className="space-y-4 font-sans text-sm text-white/70">
-                  <li><Link to="/reading" className="hover:text-white transition-colors">الكتب</Link></li>
-                  <li><Link to="/reading" className="hover:text-white transition-colors">دراسات نقدية</Link></li>
-                  <li><Link to="/reading" className="hover:text-white transition-colors">قصائد</Link></li>
-                  <li><Link to="/reading" className="hover:text-white transition-colors">قصص قصيرة</Link></li>
+                  <li><Link to="/gallery" className="hover:text-white transition-colors">كل الأعمال</Link></li>
+                  <li><Link to="/author" className="hover:text-white transition-colors">مكتب المؤلف</Link></li>
+                  <li><Link to="/about" className="hover:text-white transition-colors">عن المؤلف</Link></li>
                 </ul>
               </div>
 
               <div className="space-y-6">
                 <h4 className="font-serif text-lg text-white mb-4">المساعدة</h4>
                 <ul className="space-y-4 font-sans text-sm text-white/70">
-                  <li><a href="mailto:adamdaoudi@gmail.com" className="hover:text-white transition-colors">التواصل الأكاديمي</a></li>
-                  <li><a href="mailto:adamdaoudi@gmail.com" className="hover:text-white transition-colors">دعم القراء</a></li>
+                  <li><a href="mailto:adamdaoudi04@gmail.com" className="hover:text-white transition-colors">التواصل الأكاديمي</a></li>
+                  <li><a href="mailto:adamdaoudi04@gmail.com" className="hover:text-white transition-colors">دعم القراء</a></li>
                   <li><a href="#" className="hover:text-white transition-colors">الأسئلة الشائعة</a></li>
                 </ul>
               </div>
