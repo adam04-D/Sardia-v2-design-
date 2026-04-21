@@ -19,7 +19,7 @@ import { RevealText } from '../components/RevealText';
 import { useWork } from '../hooks/useWork';
 import { api } from '../lib/api';
 import { cdnImage, cdnSrcSet } from '../lib/img';
-import type { Comment as WorkComment } from '../types';
+import type { Comment as WorkComment, Work } from '../types';
 import Seo from '../components/Seo';
 
 // Reader Interaction Component
@@ -204,6 +204,41 @@ export default function ReadingPage() {
     if (!work?.id) return;
     api.recordView(work.id).catch(() => {});
   }, [work?.id]);
+
+  const [relatedWorks, setRelatedWorks] = useState<Work[]>([]);
+  useEffect(() => {
+    if (!work?.id) return;
+    let cancelled = false;
+    api.listWorks(1, 8)
+      .then(({ works }) => {
+        if (cancelled) return;
+        setRelatedWorks(works.filter((w) => w.id !== work.id).slice(0, 3));
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [work?.id]);
+
+  const [shareToast, setShareToast] = useState<string | null>(null);
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = work?.title ?? 'سرديا';
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url, text: work?.excerpt ?? '' });
+        return;
+      }
+    } catch {
+      // user cancelled or share failed — fall through to clipboard
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareToast('تم نسخ الرابط');
+      setTimeout(() => setShareToast(null), 2000);
+    } catch {
+      setShareToast('تعذر نسخ الرابط');
+      setTimeout(() => setShareToast(null), 2000);
+    }
+  };
 
   // Always scroll to top when opening a new reading page
   useEffect(() => {
@@ -509,7 +544,12 @@ export default function ReadingPage() {
               <p className="font-sans text-sm text-text-muted">{SITE_AUTHOR.role}</p>
             </div>
             <div className="mr-auto flex gap-3">
-              <button aria-label="مشاركة" className="p-2 rounded-full border border-stone-200 text-stone-400 hover:text-accent hover:border-accent transition-colors">
+              <button
+                type="button"
+                onClick={handleShare}
+                aria-label="مشاركة"
+                className="p-2 rounded-full border border-stone-200 text-stone-400 hover:text-accent hover:border-accent transition-colors"
+              >
                 <Share2 size={18} aria-hidden="true" />
               </button>
               <button aria-label="حفظ في الإشارات المرجعية" className="p-2 rounded-full border border-stone-200 text-stone-400 hover:text-accent hover:border-accent transition-colors">
@@ -549,8 +589,62 @@ export default function ReadingPage() {
               onSubmitComment={handleSubmitComment}
               comments={comments}
             />
+
+            {relatedWorks.length > 0 && (
+              <section className="mt-24 pt-16 border-t border-accent/10" aria-labelledby="related-heading">
+                <h4 id="related-heading" className="font-serif text-2xl text-primary font-bold text-center mb-10">
+                  قد يستوقفك أيضاً
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {relatedWorks.map((rw) => (
+                    <Link
+                      key={rw.id}
+                      to={`/reading/${rw.id}`}
+                      className="group glass-panel rounded-3xl overflow-hidden hover:shadow-xl hover:shadow-accent/10 transition-all"
+                    >
+                      {rw.image_url && (
+                        <div className="aspect-[4/3] overflow-hidden">
+                          <img
+                            src={cdnImage(rw.image_url, 800) || rw.image_url}
+                            srcSet={cdnSrcSet(rw.image_url, [400, 800, 1200])}
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            alt=""
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        </div>
+                      )}
+                      <div className="p-6 text-right">
+                        <h5 className="font-serif text-xl text-primary font-bold group-hover:text-accent transition-colors mb-2 line-clamp-2">
+                          {rw.title}
+                        </h5>
+                        {rw.excerpt && (
+                          <p className="font-sans text-sm text-text-muted line-clamp-3 leading-relaxed">
+                            {rw.excerpt}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         </article>
+
+        <AnimatePresence>
+          {shareToast && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[90] bg-primary text-surface px-6 py-3 rounded-full font-sans text-sm shadow-xl"
+              role="status"
+            >
+              {shareToast}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Floating Control Menu */}
