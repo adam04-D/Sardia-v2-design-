@@ -1,6 +1,11 @@
 import type { AdminUser, ApiEnvelope, Comment, DashboardStats, Pagination, Work } from '../types';
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:5001';
+// In prod the FE talks to the API same-origin via Netlify/Vercel proxies, so
+// the auth cookie is first-party (cross-site cookies are blocked by Safari and
+// increasingly by Chrome). In dev we hit the backend directly on its port.
+const BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
+  (import.meta.env.PROD ? '' : 'http://localhost:5001');
 const API_PREFIX = '/api/v1';
 const CSRF_KEY = 'sardia_csrf_token';
 

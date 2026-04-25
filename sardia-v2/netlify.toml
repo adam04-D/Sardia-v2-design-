@@ -5,8 +5,16 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Proxy the API under the canonical frontend domain so the auth cookie is
+# first-party (cross-site cookies are blocked by Safari and increasingly by
+# Chrome). Must come BEFORE the SPA fallback so /api/* doesn't get swallowed.
+[[redirects]]
+  from = "/api/*"
+  to = "https://sardia-backend-sql.onrender.com/api/:splat"
+  status = 200
+  force = true
+
 # Proxy dynamic feeds from the backend under the canonical frontend domain.
-# Must come BEFORE the SPA fallback so the catch-all doesn't swallow them.
 [[redirects]]
   from = "/sitemap.xml"
   to = "https://sardia-backend-sql.onrender.com/sitemap.xml"
@@ -40,4 +48,4 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://res.cloudinary.com https://images.unsplash.com; connect-src 'self' https://sardia-backend-sql.onrender.com https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://res.cloudinary.com https://images.unsplash.com; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
