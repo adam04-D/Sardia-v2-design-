@@ -1,6 +1,7 @@
 import type { AdminUser, ApiEnvelope, Comment, DashboardStats, Pagination, Work } from '../types';
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:5001';
+const API_PREFIX = '/api/v1';
 const CSRF_KEY = 'sardia_csrf_token';
 
 // CSRF token issued by /login or /me. Auth itself rides on an httpOnly cookie;
@@ -32,7 +33,14 @@ async function request<T>(path: string, opts: RequestOpts = {}): Promise<T> {
     if (csrf) finalHeaders['X-CSRF-Token'] = csrf;
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, {
+  // Allow callers to pass either "/auth/login" (preferred, gets v1 prefix) or
+  // "/api/whatever" (legacy, used as-is). Once everything is migrated this
+  // branch can go away.
+  const url = path.startsWith('/api/')
+    ? `${BASE_URL}${path}`
+    : `${BASE_URL}${API_PREFIX}${path}`;
+
+  const res = await fetch(url, {
     ...rest,
     headers: finalHeaders,
     credentials: 'include', // send httpOnly auth cookie
@@ -61,47 +69,47 @@ export interface WorksListResponse {
 export const api = {
   // Public
   listWorks: (page = 1, limit = 10) =>
-    request<WorksListResponse>(`/api/works?page=${page}&limit=${limit}`),
+    request<WorksListResponse>(`/works?page=${page}&limit=${limit}`),
   searchWorks: (q: string) =>
     request<{ works: Work[]; query: string; count: number; pagination?: Pagination }>(
-      `/api/works/search?q=${encodeURIComponent(q)}`,
+      `/works/search?q=${encodeURIComponent(q)}`,
     ),
-  getWork: (id: string | number) => request<{ work: Work }>(`/api/works/${id}`),
+  getWork: (id: string | number) => request<{ work: Work }>(`/works/${id}`),
   likeWork: (id: string | number) =>
-    request<{ likes_count: number }>(`/api/works/${id}/like`, { method: 'POST' }),
+    request<{ likes_count: number }>(`/works/${id}/like`, { method: 'POST' }),
   recordView: (id: string | number) =>
-    request<{ views_count: number; counted: boolean }>(`/api/works/${id}/view`, { method: 'POST' }),
+    request<{ views_count: number; counted: boolean }>(`/works/${id}/view`, { method: 'POST' }),
   addComment: (id: string | number, payload: { content: string; author_name: string; website?: string }) =>
-    request<{ comment: Comment }>(`/api/works/${id}/comments`, {
+    request<{ comment: Comment }>(`/works/${id}/comments`, {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
 
   // Contact
   submitContact: (payload: { name: string; email: string; message: string; website?: string }) =>
-    request<null>(`/api/contact`, { method: 'POST', body: JSON.stringify(payload) }),
+    request<null>(`/contact`, { method: 'POST', body: JSON.stringify(payload) }),
 
   // Admin — contact messages
   listMessages: () =>
     request<{ messages: Array<{ id: number; name: string; email: string; message: string; is_read: boolean; created_at: string }> }>(
-      `/api/admin/messages`,
+      `/admin/messages`,
       { auth: true },
     ),
   markMessageRead: (id: number) =>
-    request<{ message: unknown }>(`/api/admin/messages/${id}/read`, { method: 'PUT', auth: true }),
+    request<{ message: unknown }>(`/admin/messages/${id}/read`, { method: 'PUT', auth: true }),
   deleteMessage: (id: number) =>
-    request<void>(`/api/admin/messages/${id}`, { method: 'DELETE', auth: true }),
+    request<void>(`/admin/messages/${id}`, { method: 'DELETE', auth: true }),
 
   // Auth
   login: (username: string, password: string) =>
-    request<{ csrfToken: string; user: AdminUser }>(`/api/auth/login`, {
+    request<{ csrfToken: string; user: AdminUser }>(`/auth/login`, {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }),
-  me: () => request<{ user: AdminUser; csrfToken: string }>(`/api/auth/me`, { auth: true }),
-  logout: () => request<null>(`/api/auth/logout`, { method: 'POST' }),
+  me: () => request<{ user: AdminUser; csrfToken: string }>(`/auth/me`, { auth: true }),
+  logout: () => request<null>(`/auth/logout`, { method: 'POST' }),
   changePassword: (currentPassword: string, newPassword: string) =>
-    request<void>(`/api/auth/password`, {
+    request<void>(`/auth/password`, {
       method: 'PUT',
       auth: true,
       body: JSON.stringify({ currentPassword, newPassword }),
@@ -109,18 +117,18 @@ export const api = {
 
   // Admin — works
   createWork: (fd: FormData) =>
-    request<{ work: Work }>(`/api/works`, { method: 'POST', auth: true, multipart: true, body: fd }),
+    request<{ work: Work }>(`/works`, { method: 'POST', auth: true, multipart: true, body: fd }),
   updateWork: (id: number, fd: FormData) =>
-    request<{ work: Work }>(`/api/works/${id}`, { method: 'PUT', auth: true, multipart: true, body: fd }),
+    request<{ work: Work }>(`/works/${id}`, { method: 'PUT', auth: true, multipart: true, body: fd }),
   deleteWork: (id: number) =>
-    request<void>(`/api/works/${id}`, { method: 'DELETE', auth: true }),
+    request<void>(`/works/${id}`, { method: 'DELETE', auth: true }),
 
   // Admin — stats + comments
-  dashboardStats: () => request<DashboardStats>(`/api/admin/stats`, { auth: true }),
-  listAllComments: () => request<{ comments: Comment[] }>(`/api/admin/comments`, { auth: true }),
-  listPendingComments: () => request<{ comments: Comment[] }>(`/api/admin/comments/pending`, { auth: true }),
+  dashboardStats: () => request<DashboardStats>(`/admin/stats`, { auth: true }),
+  listAllComments: () => request<{ comments: Comment[] }>(`/admin/comments`, { auth: true }),
+  listPendingComments: () => request<{ comments: Comment[] }>(`/admin/comments/pending`, { auth: true }),
   approveComment: (id: number) =>
-    request<{ comment: Comment }>(`/api/admin/comments/${id}/approve`, { method: 'PUT', auth: true }),
+    request<{ comment: Comment }>(`/admin/comments/${id}/approve`, { method: 'PUT', auth: true }),
   deleteComment: (id: number) =>
-    request<void>(`/api/admin/comments/${id}`, { method: 'DELETE', auth: true }),
+    request<void>(`/admin/comments/${id}`, { method: 'DELETE', auth: true }),
 };

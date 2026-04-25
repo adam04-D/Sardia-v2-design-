@@ -17,8 +17,12 @@ export default function AdminSettings() {
     setError(null);
     setSuccess(false);
 
-    if (newPassword.length < 6) {
-      setError('يجب أن تكون كلمة المرور الجديدة 6 أحرف على الأقل.');
+    if (newPassword.length < 8) {
+      setError('يجب أن تكون كلمة المرور الجديدة 8 أحرف على الأقل.');
+      return;
+    }
+    if (!/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      setError('يجب أن تحتوي كلمة المرور على حرف واحد ورقم واحد على الأقل.');
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -57,7 +61,7 @@ export default function AdminSettings() {
           <div>
             <h2 className="font-serif text-xl font-bold text-primary">تغيير كلمة المرور</h2>
             <p className="font-sans text-xs text-stone-500 mt-0.5">
-              يجب أن تحتوي كلمة المرور الجديدة على 6 أحرف على الأقل.
+              8 أحرف على الأقل، تتضمن حرفاً ورقماً.
             </p>
           </div>
         </div>
@@ -99,7 +103,7 @@ export default function AdminSettings() {
               id="newPassword"
               type="password"
               required
-              minLength={6}
+              minLength={8}
               autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -115,7 +119,7 @@ export default function AdminSettings() {
               id="confirmPassword"
               type="password"
               required
-              minLength={6}
+              minLength={8}
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

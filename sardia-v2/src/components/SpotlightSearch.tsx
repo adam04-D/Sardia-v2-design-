@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorks } from '../hooks/useWork';
 import { api, ApiError } from '../lib/api';
+import { cdnImage, cdnSrcSet } from '../lib/img';
 import type { Work } from '../types';
 
 export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -151,7 +152,15 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
                   </button>
                   {filteredWorks[selectedIndex].image_url && (
                     <div className="aspect-[2/3] w-48 mx-auto mb-8 rounded-2xl overflow-hidden shadow-xl">
-                      <img src={filteredWorks[selectedIndex].image_url!} alt={filteredWorks[selectedIndex].title} className="w-full h-full object-cover" />
+                      <img
+                        src={cdnImage(filteredWorks[selectedIndex].image_url, 600)}
+                        srcSet={cdnSrcSet(filteredWorks[selectedIndex].image_url, [400, 600, 800])}
+                        sizes="192px"
+                        alt={filteredWorks[selectedIndex].title}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
                   <h2 className="font-serif text-4xl text-primary text-center mb-4">{filteredWorks[selectedIndex].title}</h2>
@@ -247,7 +256,13 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-16 rounded-lg bg-stone-200 overflow-hidden shadow-sm flex items-center justify-center">
                             {item.image_url ? (
-                              <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+                              <img
+                                src={cdnImage(item.image_url, 200)}
+                                alt={item.title}
+                                loading="lazy"
+                                decoding="async"
+                                className="w-full h-full object-cover"
+                              />
                             ) : (
                               <BookOpen size={18} className="text-stone-400" />
                             )}

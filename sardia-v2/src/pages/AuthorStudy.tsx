@@ -12,6 +12,7 @@ import Seo from '../components/Seo';
 import { Eyebrow } from '../components/ui/Eyebrow';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { useWorks } from '../hooks/useWork';
+import { cdnImage, cdnSrcSet } from '../lib/img';
 
 const PUBLICATION_FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop';
@@ -128,9 +129,12 @@ export default function AuthorStudy() {
                   <div className="w-full sm:w-52 shrink-0 overflow-hidden rounded-[2rem] shadow-xl aspect-[2/3] bg-stone-100 relative">
                     <div className="absolute inset-0 bg-accent/20 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply"></div>
                     <img
-                      src={pub.image_url ?? PUBLICATION_FALLBACK_IMAGE}
+                      src={cdnImage(pub.image_url, 800) || PUBLICATION_FALLBACK_IMAGE}
+                      srcSet={cdnSrcSet(pub.image_url, [400, 600, 800, 1200])}
+                      sizes="(min-width: 640px) 208px, 100vw"
                       alt={pub.title}
                       loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-[0.16,1,0.3,1]"
                     />
                   </div>

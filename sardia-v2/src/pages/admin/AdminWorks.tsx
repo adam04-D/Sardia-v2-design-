@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Heart, Eye, ChevronRight, ChevronLeft, BookOpen, Search, X } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
+import { cdnImage } from '../../lib/img';
 import { EmptyState } from '../../components/ui/EmptyState';
 import type { Pagination, Work } from '../../types';
 
@@ -145,7 +146,7 @@ export default function AdminWorks() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {w.image_url && (
-                          <img src={w.image_url} alt={`غلاف ${w.title}`} className="w-10 h-12 object-cover rounded" />
+                          <img src={cdnImage(w.image_url, 120)} alt={`غلاف ${w.title}`} loading="lazy" decoding="async" className="w-10 h-12 object-cover rounded" />
                         )}
                         <span className="font-sans text-sm text-stone-800">{w.title}</span>
                       </div>

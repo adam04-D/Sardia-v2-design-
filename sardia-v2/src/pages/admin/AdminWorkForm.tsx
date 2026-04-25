@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ArrowRight, Upload } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
+import { cdnImage } from '../../lib/img';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -140,7 +141,7 @@ export default function AdminWorkForm() {
           <label htmlFor="image" className="font-sans text-xs font-bold text-stone-600 block mb-2">صورة الغلاف</label>
           {currentImage && !file && (
             <div className="mb-3 flex items-center gap-3">
-              <img src={currentImage} alt="الغلاف الحالي" className="w-20 h-28 object-cover rounded border border-stone-200" />
+              <img src={cdnImage(currentImage, 240)} alt="الغلاف الحالي" loading="lazy" decoding="async" className="w-20 h-28 object-cover rounded border border-stone-200" />
               <span className="font-sans text-xs text-stone-400">الغلاف الحالي. اختر ملفاً لاستبداله.</span>
             </div>
           )}
