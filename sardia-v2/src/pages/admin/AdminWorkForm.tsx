@@ -1,11 +1,14 @@
-import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useCallback, useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
+import { useNavigate, useParams, Link, useBeforeUnload } from 'react-router-dom';
 import { ArrowRight, Upload } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
 import { cdnImage } from '../../lib/img';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+type Snapshot = { title: string; excerpt: string; fullContent: string };
+const EMPTY_SNAPSHOT: Snapshot = { title: '', excerpt: '', fullContent: '' };
 
 export default function AdminWorkForm() {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +24,15 @@ export default function AdminWorkForm() {
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Snapshot of last-saved values so dirty-detection works after the async load
+  // on edit pages and resets cleanly after submit.
+  const [savedSnapshot, setSavedSnapshot] = useState<Snapshot>(EMPTY_SNAPSHOT);
+  const isDirty =
+    title !== savedSnapshot.title ||
+    excerpt !== savedSnapshot.excerpt ||
+    fullContent !== savedSnapshot.fullContent ||
+    file !== null;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const picked = e.target.files?.[0] ?? null;
@@ -52,11 +64,26 @@ export default function AdminWorkForm() {
         setExcerpt(work.excerpt ?? '');
         setFullContent(work.full_content ?? '');
         setCurrentImage(work.image_url);
+        setSavedSnapshot({
+          title: work.title,
+          excerpt: work.excerpt ?? '',
+          fullContent: work.full_content ?? '',
+        });
       })
       .catch((e) => { if (!cancelled) setError(e instanceof ApiError ? e.message : 'فشل التحميل'); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [id, isEdit]);
+
+  // beforeunload guard — browser-native confirm on tab close / refresh / external
+  // nav when there are unsaved changes. The message text is ignored by modern
+  // browsers (they show their own); the boolean return is what triggers the prompt.
+  useBeforeUnload(useCallback((e: BeforeUnloadEvent) => {
+    if (isDirty && !submitting) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  }, [isDirty, submitting]));
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -72,6 +99,9 @@ export default function AdminWorkForm() {
     try {
       if (isEdit) await api.updateWork(Number(id), fd);
       else await api.createWork(fd);
+      // Reset dirty snapshot so beforeunload doesn't fire on the post-save nav.
+      setSavedSnapshot({ title, excerpt, fullContent });
+      setFile(null);
       navigate('/admin/works');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'فشل الحفظ');
@@ -171,7 +201,15 @@ export default function AdminWorkForm() {
           >
             {submitting ? 'جاري الحفظ...' : isEdit ? 'حفظ التعديلات' : 'إنشاء العمل'}
           </button>
-          <Link to="/admin/works" className="font-sans text-sm text-stone-500 hover:text-stone-700">
+          <Link
+            to="/admin/works"
+            onClick={(e) => {
+              if (isDirty && !confirm('لديك تغييرات غير محفوظة. هل تريد المتابعة بدون حفظ؟')) {
+                e.preventDefault();
+              }
+            }}
+            className="font-sans text-sm text-stone-500 hover:text-stone-700"
+          >
             إلغاء
           </Link>
         </div>
