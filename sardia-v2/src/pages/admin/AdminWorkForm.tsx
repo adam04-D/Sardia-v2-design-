@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate, useParams, Link, useBeforeUnload } from 'react-router-dom';
 import { ArrowRight, Upload } from 'lucide-react';
+import { toast } from 'sonner';
 import { api, ApiError } from '../../lib/api';
 import { cdnImage } from '../../lib/img';
 
@@ -102,6 +103,7 @@ export default function AdminWorkForm() {
       // Reset dirty snapshot so beforeunload doesn't fire on the post-save nav.
       setSavedSnapshot({ title, excerpt, fullContent });
       setFile(null);
+      toast.success(isEdit ? 'تم حفظ التعديلات.' : 'تم إنشاء العمل.');
       navigate('/admin/works');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'فشل الحفظ');

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, ChevronLeft, ChevronRight, MessageSquare, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { api, ApiError } from '../../lib/api';
 import { EmptyState } from '../../components/ui/EmptyState';
 import type { Comment } from '../../types';
@@ -50,8 +51,9 @@ export default function AdminComments() {
     try {
       await api.approveComment(c.id);
       setComments((prev) => tab === 'pending' ? prev.filter((x) => x.id !== c.id) : prev.map((x) => x.id === c.id ? { ...x, is_approved: true } : x));
+      toast.success('تم اعتماد التعليق.');
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'فشلت الموافقة');
+      toast.error(e instanceof ApiError ? e.message : 'فشلت الموافقة');
     } finally {
       setBusyId(null);
     }
@@ -63,8 +65,9 @@ export default function AdminComments() {
     try {
       await api.deleteComment(c.id);
       setComments((prev) => prev.filter((x) => x.id !== c.id));
+      toast.success('تم حذف التعليق.');
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'فشل الحذف');
+      toast.error(e instanceof ApiError ? e.message : 'فشل الحذف');
     } finally {
       setBusyId(null);
     }

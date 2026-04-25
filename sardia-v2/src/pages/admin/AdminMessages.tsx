@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Check, Mail, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { api, ApiError } from '../../lib/api';
 import { EmptyState } from '../../components/ui/EmptyState';
 
@@ -39,7 +40,7 @@ export default function AdminMessages() {
       await api.markMessageRead(m.id);
       setMessages((prev) => prev.map((x) => x.id === m.id ? { ...x, is_read: true } : x));
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'فشل التحديث');
+      toast.error(e instanceof ApiError ? e.message : 'فشل التحديث');
     } finally {
       setBusyId(null);
     }
@@ -51,8 +52,9 @@ export default function AdminMessages() {
     try {
       await api.deleteMessage(m.id);
       setMessages((prev) => prev.filter((x) => x.id !== m.id));
+      toast.success('تم حذف الرسالة.');
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'فشل الحذف');
+      toast.error(e instanceof ApiError ? e.message : 'فشل الحذف');
     } finally {
       setBusyId(null);
     }

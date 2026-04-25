@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Heart, Eye, ChevronRight, ChevronLeft, BookOpen, Search, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { api, ApiError } from '../../lib/api';
 import { cdnImage } from '../../lib/img';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -53,8 +54,9 @@ export default function AdminWorks() {
       } else {
         await load(page);
       }
+      toast.success(`تم حذف «${w.title}».`);
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'فشل الحذف');
+      toast.error(e instanceof ApiError ? e.message : 'فشل الحذف');
     } finally {
       setDeletingId(null);
     }

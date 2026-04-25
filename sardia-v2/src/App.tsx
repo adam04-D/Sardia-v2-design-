@@ -5,6 +5,7 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { Toaster } from 'sonner';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import RouteFallback from './components/RouteFallback';
@@ -35,6 +36,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Toaster
+          position="top-center"
+          dir="rtl"
+          richColors
+          closeButton
+          toastOptions={{ className: 'font-sans' }}
+        />
         <ErrorBoundary>
           <Suspense fallback={<RouteFallback />}>
             <Routes>
