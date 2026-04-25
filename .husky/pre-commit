@@ -1,0 +1,5 @@
+node scripts/check-secrets.js
+# Run typecheck + lint inside the actual app folder. Skip if not changed for speed.
+if git diff --cached --name-only | grep -q '^sardia-v2/'; then
+  cd sardia-v2 && npm run check
+fi

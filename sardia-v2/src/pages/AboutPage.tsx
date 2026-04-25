@@ -46,9 +46,11 @@ export default function AboutPage() {
           className="relative rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl group"
         >
           <div className="absolute inset-0 bg-accent/10 mix-blend-multiply z-10 group-hover:bg-transparent transition-colors duration-700"></div>
-          <img 
-            src="https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=1000&auto=format&fit=crop" 
-            alt="Author portrait placeholder" 
+          <img
+            src="https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=1000&auto=format&fit=crop"
+            alt="Author portrait placeholder"
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover grayscale transition-transform duration-1000 group-hover:scale-105"
           />
         </motion.div>

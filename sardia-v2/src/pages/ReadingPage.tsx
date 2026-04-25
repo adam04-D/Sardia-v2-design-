@@ -476,6 +476,8 @@ export default function ReadingPage() {
               srcSet={cdnSrcSet(displayImage, [800, 1200, 1600, 2000, 2400])}
               sizes="100vw"
               alt={displayTitle}
+              fetchPriority="high"
+              decoding="async"
               className="w-full h-[120%] object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent mix-blend-multiply"></div>
@@ -536,6 +538,8 @@ export default function ReadingPage() {
             <img
               src={SITE_AUTHOR.avatar}
               alt={SITE_AUTHOR.name}
+              loading="lazy"
+              decoding="async"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/favicon.svg'; }}
               className="w-16 h-16 rounded-full object-cover grayscale"
             />
