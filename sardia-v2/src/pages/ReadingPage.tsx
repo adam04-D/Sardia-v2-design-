@@ -608,7 +608,7 @@ export default function ReadingPage() {
                             src={cdnImage(rw.image_url, 800) || rw.image_url}
                             srcSet={cdnSrcSet(rw.image_url, [400, 800, 1200])}
                             sizes="(max-width: 768px) 100vw, 33vw"
-                            alt=""
+                            alt={`غلاف ${rw.title}`}
                             loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />

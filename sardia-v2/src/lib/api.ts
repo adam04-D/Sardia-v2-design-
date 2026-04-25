@@ -1,12 +1,16 @@
 import type { AdminUser, ApiEnvelope, Comment, DashboardStats, Pagination, Work } from '../types';
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:5001';
-const TOKEN_KEY = 'sardia_admin_token';
+const CSRF_KEY = 'sardia_csrf_token';
 
-export const tokenStore = {
-  get: () => localStorage.getItem(TOKEN_KEY),
-  set: (t: string) => localStorage.setItem(TOKEN_KEY, t),
-  clear: () => localStorage.removeItem(TOKEN_KEY),
+// CSRF token issued by /login or /me. Auth itself rides on an httpOnly cookie;
+// this token is echoed via X-CSRF-Token on mutations so a cross-site form post
+// (which the browser would attach the cookie to but cannot read this token) is
+// rejected. sessionStorage is fine — we re-fetch from /me on hard reload.
+export const csrfStore = {
+  get: () => sessionStorage.getItem(CSRF_KEY),
+  set: (t: string) => sessionStorage.setItem(CSRF_KEY, t),
+  clear: () => sessionStorage.removeItem(CSRF_KEY),
 };
 
 export class ApiError extends Error {
@@ -24,8 +28,8 @@ async function request<T>(path: string, opts: RequestOpts = {}): Promise<T> {
   const finalHeaders: Record<string, string> = { ...(headers as Record<string, string> ?? {}) };
   if (!multipart) finalHeaders['Content-Type'] = 'application/json';
   if (auth) {
-    const token = tokenStore.get();
-    if (token) finalHeaders['Authorization'] = `Bearer ${token}`;
+    const csrf = csrfStore.get();
+    if (csrf) finalHeaders['X-CSRF-Token'] = csrf;
   }
 
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -36,6 +40,14 @@ async function request<T>(path: string, opts: RequestOpts = {}): Promise<T> {
   const body = (await res.json().catch(() => ({}))) as ApiEnvelope<T> & { message?: string };
 
   if (!res.ok || body.success === false) {
+    // Authenticated call rejected → cookie expired or CSRF token rotated.
+    // Clear local state and let the AuthProvider redirect to /admin/login.
+    if (auth && (res.status === 401 || res.status === 403)) {
+      csrfStore.clear();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:expired', { detail: { status: res.status } }));
+      }
+    }
     throw new ApiError(body.message ?? `Request failed (${res.status})`, res.status);
   }
   return body.data as T;
@@ -82,11 +94,11 @@ export const api = {
 
   // Auth
   login: (username: string, password: string) =>
-    request<{ token: string; user: AdminUser }>(`/api/auth/login`, {
+    request<{ csrfToken: string; user: AdminUser }>(`/api/auth/login`, {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }),
-  me: () => request<{ user: AdminUser }>(`/api/auth/me`, { auth: true }),
+  me: () => request<{ user: AdminUser; csrfToken: string }>(`/api/auth/me`, { auth: true }),
   logout: () => request<null>(`/api/auth/logout`, { method: 'POST' }),
   changePassword: (currentPassword: string, newPassword: string) =>
     request<void>(`/api/auth/password`, {

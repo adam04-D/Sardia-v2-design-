@@ -73,6 +73,8 @@ export default function HomePage() {
                   }
                 }}
                 alt="Adam Daoudi"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover object-top grayscale hover:grayscale-0 transition-all duration-1000 relative"
               />
             </div>
@@ -150,6 +152,8 @@ export default function HomePage() {
         <img
           src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1600&auto=format&fit=crop"
           alt="Library"
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 scale-105 group-hover:scale-100"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1a1c1c] via-[#1a1c1c]/60 to-transparent opacity-90"></div>

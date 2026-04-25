@@ -145,7 +145,7 @@ export default function AdminWorks() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {w.image_url && (
-                          <img src={w.image_url} alt="" className="w-10 h-12 object-cover rounded" />
+                          <img src={w.image_url} alt={`غلاف ${w.title}`} className="w-10 h-12 object-cover rounded" />
                         )}
                         <span className="font-sans text-sm text-stone-800">{w.title}</span>
                       </div>
