@@ -6,7 +6,9 @@ import { api, ApiError } from '../../lib/api';
 import { cdnImage } from '../../lib/img';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const ACCEPTED_AUDIO_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/m4a', 'audio/x-m4a', 'audio/aac', 'audio/wav', 'audio/ogg'];
 
 type Snapshot = { title: string; excerpt: string; fullContent: string };
 const EMPTY_SNAPSHOT: Snapshot = { title: '', excerpt: '', fullContent: '' };
@@ -21,6 +23,9 @@ export default function AdminWorkForm() {
   const [fullContent, setFullContent] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [currentAudio, setCurrentAudio] = useState<string | null>(null);
+  const [removeAudio, setRemoveAudio] = useState(false);
 
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
@@ -33,7 +38,9 @@ export default function AdminWorkForm() {
     title !== savedSnapshot.title ||
     excerpt !== savedSnapshot.excerpt ||
     fullContent !== savedSnapshot.fullContent ||
-    file !== null;
+    file !== null ||
+    audioFile !== null ||
+    removeAudio;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const picked = e.target.files?.[0] ?? null;
@@ -55,6 +62,27 @@ export default function AdminWorkForm() {
     setFile(picked);
   };
 
+  const handleAudioChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const picked = e.target.files?.[0] ?? null;
+    if (!picked) {
+      setAudioFile(null);
+      return;
+    }
+    if (!ACCEPTED_AUDIO_TYPES.includes(picked.type)) {
+      setError('نوع الملف الصوتي غير مدعوم. استخدم MP3 أو M4A أو AAC أو WAV أو OGG.');
+      e.target.value = '';
+      return;
+    }
+    if (picked.size > MAX_AUDIO_BYTES) {
+      setError('حجم الملف الصوتي يتجاوز 25 ميغابايت.');
+      e.target.value = '';
+      return;
+    }
+    setError(null);
+    setAudioFile(picked);
+    setRemoveAudio(false); // overrides any prior "remove" intent
+  };
+
   useEffect(() => {
     if (!isEdit) return;
     let cancelled = false;
@@ -65,6 +93,7 @@ export default function AdminWorkForm() {
         setExcerpt(work.excerpt ?? '');
         setFullContent(work.full_content ?? '');
         setCurrentImage(work.image_url);
+        setCurrentAudio(work.audio_url ?? null);
         setSavedSnapshot({
           title: work.title,
           excerpt: work.excerpt ?? '',
@@ -96,6 +125,8 @@ export default function AdminWorkForm() {
     fd.append('excerpt', excerpt);
     fd.append('full_content', fullContent);
     if (file) fd.append('image', file);
+    if (audioFile) fd.append('audio', audioFile);
+    if (removeAudio && !audioFile) fd.append('remove_audio', 'true');
 
     try {
       if (isEdit) await api.updateWork(Number(id), fd);
@@ -103,6 +134,8 @@ export default function AdminWorkForm() {
       // Reset dirty snapshot so beforeunload doesn't fire on the post-save nav.
       setSavedSnapshot({ title, excerpt, fullContent });
       setFile(null);
+      setAudioFile(null);
+      setRemoveAudio(false);
       toast.success(isEdit ? 'تم حفظ التعديلات.' : 'تم إنشاء العمل.');
       navigate('/admin/works');
     } catch (err) {
@@ -194,6 +227,57 @@ export default function AdminWorkForm() {
           </label>
           <p className="font-sans text-xs text-stone-400 mt-2">
             JPG / PNG / WEBP / GIF — الحد الأقصى 5 ميغابايت.
+          </p>
+        </div>
+
+        <div>
+          <label htmlFor="audio" className="font-sans text-xs font-bold text-stone-600 block mb-2">
+            القراءة الصوتية
+            <span className="font-normal text-stone-400 mr-2">(اختيارية)</span>
+          </label>
+          {currentAudio && !audioFile && !removeAudio && (
+            <div className="mb-3 space-y-2">
+              <audio controls preload="none" src={currentAudio} className="w-full">
+                المتصفح لا يدعم تشغيل الصوت.
+              </audio>
+              <button
+                type="button"
+                onClick={() => setRemoveAudio(true)}
+                className="font-sans text-xs text-red-600 hover:text-red-700 underline"
+              >
+                إزالة الملف الصوتي الحالي
+              </button>
+            </div>
+          )}
+          {removeAudio && (
+            <div className="mb-3 flex items-center gap-3 px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
+              <span className="font-sans text-xs text-red-700">
+                سيتم حذف الملف الصوتي الحالي عند الحفظ.
+              </span>
+              <button
+                type="button"
+                onClick={() => setRemoveAudio(false)}
+                className="font-sans text-xs text-stone-600 hover:text-stone-800 underline mr-auto"
+              >
+                تراجع
+              </button>
+            </div>
+          )}
+          <label className="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-50 border border-dashed border-stone-300 rounded-lg cursor-pointer hover:bg-stone-100 transition-colors">
+            <Upload size={14} aria-hidden="true" />
+            <span className="font-sans text-sm text-stone-600">
+              {audioFile ? audioFile.name : currentAudio ? 'استبدل الملف الصوتي...' : 'اختر ملفاً صوتياً...'}
+            </span>
+            <input
+              id="audio"
+              type="file"
+              accept={ACCEPTED_AUDIO_TYPES.join(',')}
+              className="hidden"
+              onChange={handleAudioChange}
+            />
+          </label>
+          <p className="font-sans text-xs text-stone-400 mt-2">
+            MP3 / M4A / AAC / WAV / OGG — الحد الأقصى 25 ميغابايت.
           </p>
         </div>
 

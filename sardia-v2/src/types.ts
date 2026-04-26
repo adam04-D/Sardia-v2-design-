@@ -16,6 +16,8 @@ export interface Work {
   full_content?: string | null;
   image_url: string | null;
   image_public_id?: string | null;
+  audio_url?: string | null;
+  audio_public_id?: string | null;
   likes_count: number;
   views_count?: number;
   created_at: string;

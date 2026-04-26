@@ -580,6 +580,23 @@ export default function ReadingPage() {
             </div>
           </motion.div>
 
+          {work?.audio_url && (
+            <div className="mb-16 glass-panel rounded-3xl p-6 md:p-8">
+              <div className="font-sans text-[10px] font-bold tracking-[0.2em] uppercase text-accent mb-4">
+                قراءة صوتية
+              </div>
+              <audio
+                controls
+                preload="none"
+                src={work.audio_url}
+                className="w-full"
+                aria-label={`القراءة الصوتية لعمل ${displayTitle}`}
+              >
+                المتصفح لا يدعم تشغيل الصوت.
+              </audio>
+            </div>
+          )}
+
           <div className="space-y-12">
             {fullContent && (
               <div id="ch1" className="scroll-mt-32">
