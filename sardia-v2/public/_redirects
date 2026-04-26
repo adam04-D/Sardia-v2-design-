@@ -1,12 +1,8 @@
-# Cloudflare Pages redirects (also read by Netlify; format compatible).
-# Order matters — first match wins. /api and feed proxies MUST come before SPA fallback.
+# Cloudflare Pages redirects.
+# Cross-origin proxies (/api/*, /sitemap.xml, /rss.xml) are NOT handled here —
+# Cloudflare Pages rejects 200 redirects to absolute URLs. They live in
+# functions/api/[[path]].ts and functions/{sitemap,rss}.xml.ts instead.
+#
+# This file only handles the SPA fallback for client-side routing.
 
-# Proxy backend API under same origin so the auth cookie stays first-party.
-/api/*        https://sardia-backend-sql.onrender.com/api/:splat   200
-
-# Proxy dynamic feeds from the backend.
-/sitemap.xml  https://sardia-backend-sql.onrender.com/sitemap.xml  200
-/rss.xml      https://sardia-backend-sql.onrender.com/rss.xml      200
-
-# SPA fallback — every other route renders the React app.
-/*            /index.html                                          200
+/*    /index.html   200
