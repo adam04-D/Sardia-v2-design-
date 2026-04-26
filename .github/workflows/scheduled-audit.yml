@@ -45,7 +45,7 @@ jobs:
       - name: open issue on new advisory
         if: steps.audit.outputs.rc != '0'
         working-directory: .
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('node:fs');
