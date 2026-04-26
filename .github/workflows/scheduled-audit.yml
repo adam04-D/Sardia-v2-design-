@@ -1,0 +1,77 @@
+name: scheduled-audit
+
+# Weekly npm audit watcher for the FE repo. Mirrors the backend setup.
+# Audit runs against sardia-v2/ (the actual app). Opens an issue on
+# any new high+ advisory.
+
+on:
+  schedule:
+    - cron: '17 9 * * 1'  # off-minute, slightly after backend run
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+defaults:
+  run:
+    working-directory: sardia-v2
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: sardia-v2/package-lock.json
+      - run: npm ci
+
+      - name: npm audit (production deps, high+)
+        id: audit
+        run: |
+          set +e
+          npm audit --omit=dev --audit-level=high --json > audit.json
+          rc=$?
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ $rc -ne 0 ]; then
+            echo "summary<<EOF" >> "$GITHUB_OUTPUT"
+            jq -r '.metadata.vulnerabilities | "high: \(.high) — critical: \(.critical)"' audit.json >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: open issue on new advisory
+        if: steps.audit.outputs.rc != '0'
+        working-directory: .
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('node:fs');
+            const audit = JSON.parse(fs.readFileSync('sardia-v2/audit.json', 'utf8'));
+            const summary = `${{ steps.audit.outputs.summary }}`;
+            const body = [
+              `Weekly FE npm audit reported new advisories.`,
+              ``,
+              `Summary: ${summary}`,
+              ``,
+              `### Top findings`,
+              ``,
+              Object.values(audit.vulnerabilities ?? {})
+                .filter((v) => ['high', 'critical'].includes(v.severity))
+                .slice(0, 10)
+                .map((v) => `- **${v.name}** (${v.severity}) — ${v.via?.[0]?.title ?? v.via?.[0] ?? 'see audit'}`)
+                .join('\n'),
+              ``,
+              `Run \`cd sardia-v2 && npm audit --omit=dev --audit-level=high\` locally for full output.`,
+              ``,
+              `Run: ${context.runId}`,
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[security] new high+ npm advisory — ${new Date().toISOString().slice(0, 10)}`,
+              body,
+              labels: ['security', 'dependencies'],
+            });
