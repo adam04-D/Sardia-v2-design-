@@ -158,7 +158,9 @@ export default function AdminWorkForm() {
         <div>
           <label htmlFor="full_content" className="font-sans text-xs font-bold text-stone-600 block mb-2">
             المحتوى الكامل
-            <span className="font-normal text-stone-400 mr-2">(افصل بين الفقرات بسطر فارغ)</span>
+            <span className="font-normal text-stone-400 mr-2">
+              يدعم Markdown — استخدم # للعناوين، &gt; للاقتباس، **للتأكيد**، *للميل*، --- لفاصل، وسطراً فارغاً للفقرة الجديدة
+            </span>
           </label>
           <textarea
             id="full_content"

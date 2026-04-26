@@ -21,6 +21,7 @@ import { api } from '../lib/api';
 import { cdnImage, cdnSrcSet } from '../lib/img';
 import type { Comment as WorkComment, Work } from '../types';
 import Seo from '../components/Seo';
+import MarkdownContent from '../components/MarkdownContent';
 
 // Reader Interaction Component
 const ReaderInteraction = ({
@@ -286,9 +287,7 @@ export default function ReadingPage() {
   const displayImage =
     work?.image_url ??
     'https://images.unsplash.com/photo-1455390582262-044cdead2708?q=80&w=2000&auto=format&fit=crop';
-  const fullContentParagraphs = work?.full_content
-    ? work.full_content.split(/\n\s*\n/).filter((p) => p.trim().length > 0)
-    : null;
+  const fullContent = work?.full_content?.trim() || null;
   const [isTocOpen, setIsTocOpen] = useState(false);
   const [activeChapter, setActiveChapter] = useState('ch1');
   
@@ -563,15 +562,13 @@ export default function ReadingPage() {
           </motion.div>
 
           <div className="space-y-12">
-            {fullContentParagraphs && (
-              <div id="ch1" className="scroll-mt-32 space-y-6">
+            {fullContent && (
+              <div id="ch1" className="scroll-mt-32">
                 <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">{displayTitle}</h2>
-                {fullContentParagraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+                <MarkdownContent source={fullContent} />
               </div>
             )}
-            {!fullContentParagraphs && loading && (
+            {!fullContent && loading && (
               <div id="ch1" className="scroll-mt-32 space-y-4" aria-hidden="true">
                 <div className="animate-pulse bg-stone-200 h-10 w-2/3 mx-auto rounded mb-8" />
                 {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -579,7 +576,7 @@ export default function ReadingPage() {
                 ))}
               </div>
             )}
-            {!fullContentParagraphs && !loading && (
+            {!fullContent && !loading && (
               <div id="ch1" className="scroll-mt-32 text-center py-16">
                 <p className="font-sans text-text-muted">
                   {error ? `تعذر تحميل النص: ${error}` : 'لم يُضف محتوى هذا العمل بعد.'}
