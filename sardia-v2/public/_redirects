@@ -1,8 +1,0 @@
-# Cloudflare Pages redirects.
-# Cross-origin proxies (/api/*, /sitemap.xml, /rss.xml) are NOT handled here —
-# Cloudflare Pages rejects 200 redirects to absolute URLs. They live in
-# functions/api/[[path]].ts and functions/{sitemap,rss}.xml.ts instead.
-#
-# This file only handles the SPA fallback for client-side routing.
-
-/*    /index.html   200
