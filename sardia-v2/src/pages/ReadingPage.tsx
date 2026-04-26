@@ -17,6 +17,7 @@ const COMMENT_MAX_LENGTH = 2000;
 const NAME_MAX_LENGTH = 80;
 import { RevealText } from '../components/RevealText';
 import { useWork } from '../hooks/useWork';
+import { useBookmarks } from '../hooks/useBookmarks';
 import { api } from '../lib/api';
 import { cdnImage, cdnSrcSet } from '../lib/img';
 import type { Comment as WorkComment, Work } from '../types';
@@ -218,6 +219,13 @@ export default function ReadingPage() {
       .catch(() => {});
     return () => { cancelled = true; };
   }, [work?.id]);
+
+  const bookmarks = useBookmarks();
+  const isBookmarked = work?.id ? bookmarks.has(work.id) : false;
+  const handleToggleBookmark = () => {
+    if (!work?.id) return;
+    bookmarks.toggle(work.id);
+  };
 
   const [shareToast, setShareToast] = useState<string | null>(null);
   const handleShare = async () => {
@@ -555,8 +563,19 @@ export default function ReadingPage() {
               >
                 <Share2 size={18} aria-hidden="true" />
               </button>
-              <button aria-label="حفظ في الإشارات المرجعية" className="p-2 rounded-full border border-stone-200 text-stone-400 hover:text-accent hover:border-accent transition-colors">
-                <Bookmark size={18} aria-hidden="true" />
+              <button
+                type="button"
+                onClick={handleToggleBookmark}
+                aria-label={isBookmarked ? 'إزالة من الإشارات المرجعية' : 'حفظ في الإشارات المرجعية'}
+                aria-pressed={isBookmarked}
+                disabled={!work?.id}
+                className={`p-2 rounded-full border transition-colors ${
+                  isBookmarked
+                    ? 'border-accent text-accent bg-accent/5'
+                    : 'border-stone-200 text-stone-400 hover:text-accent hover:border-accent'
+                } disabled:opacity-40`}
+              >
+                <Bookmark size={18} aria-hidden="true" fill={isBookmarked ? 'currentColor' : 'none'} />
               </button>
             </div>
           </motion.div>

@@ -22,6 +22,7 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
+const SavedPage = lazy(() => import('./pages/SavedPage'));
 
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
@@ -115,6 +116,14 @@ export default function App() {
               element={
                 <Layout>
                   <ContactPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/saved"
+              element={
+                <Layout>
+                  <SavedPage />
                 </Layout>
               }
             />
