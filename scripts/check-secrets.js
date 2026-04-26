@@ -28,7 +28,10 @@ const PATTERNS = [
 
 // Paths we should never commit even if no secret matches.
 const FORBIDDEN_PATHS = [/(^|\/)\.env$/, /(^|\/)\.env\.[^/]*$/];
-const FORBIDDEN_ALLOW = [/\.env\.example$/, /\.env\.sample$/];
+// .env.production ships an empty VITE_API_BASE_URL so the FE uses the
+// same-origin /api proxy. It's a build-time template, not a secret store.
+// The pattern scanner still inspects its contents for accidental leaks.
+const FORBIDDEN_ALLOW = [/\.env\.example$/, /\.env\.sample$/, /\.env\.production$/];
 
 // Test fixtures get a pass on the patterns flagged `inFixturesOk`.
 const isTestFile = (file) => /(^|\/)tests?\//.test(file) || /\.test\.[jt]sx?$/.test(file);
