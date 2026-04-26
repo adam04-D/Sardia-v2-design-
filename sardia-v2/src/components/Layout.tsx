@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
-import { Search, Menu, X, Instagram, Mail, Twitter, Youtube } from 'lucide-react';
+import { Search, Menu, X, Instagram, Mail } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
 
@@ -248,16 +248,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="md:col-span-2 space-y-8">
                 <div className="text-4xl font-serif font-bold text-white tracking-widest">آدم داودي</div>
                 <div className="flex gap-4">
-                  <a href="#" aria-label="إنستغرام" className="text-white/70 hover:text-white transition-colors duration-300">
+                  <a
+                    href="https://www.instagram.com/sardia.me"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="إنستغرام"
+                    className="text-white/70 hover:text-white transition-colors duration-300"
+                  >
                     <Instagram size={20} aria-hidden="true" />
                   </a>
-                  <a href="#" aria-label="تويتر" className="text-white/70 hover:text-white transition-colors duration-300">
-                    <Twitter size={20} aria-hidden="true" />
-                  </a>
-                  <a href="#" aria-label="يوتيوب" className="text-white/70 hover:text-white transition-colors duration-300">
-                    <Youtube size={20} aria-hidden="true" />
-                  </a>
-                  <a href="mailto:adamdaoudi04@gmail.com" aria-label="البريد الإلكتروني" className="text-white/70 hover:text-white transition-colors duration-300">
+                  <a
+                    href="mailto:adam.daoudi@sardia.me"
+                    aria-label="البريد الإلكتروني"
+                    className="text-white/70 hover:text-white transition-colors duration-300"
+                  >
                     <Mail size={20} aria-hidden="true" />
                   </a>
                 </div>
@@ -285,7 +289,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <h4 className="font-serif text-lg text-white mb-4">المساعدة</h4>
                 <ul className="space-y-4 font-sans text-sm text-white/70">
                   <li><Link to="/contact" className="hover:text-white transition-colors">تواصل معنا</Link></li>
-                  <li><a href="mailto:adamdaoudi04@gmail.com" className="hover:text-white transition-colors">البريد الإلكتروني</a></li>
+                  <li><a href="mailto:adam.daoudi@sardia.me" className="hover:text-white transition-colors">البريد الإلكتروني</a></li>
                 </ul>
               </div>
 
