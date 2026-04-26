@@ -1,4 +1,5 @@
-import { Component, type ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { captureException } from '../lib/sentry';
 
 type Props = { children: ReactNode };
 type State = { hasError: boolean; error: Error | null };
@@ -10,8 +11,12 @@ export default class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, info: unknown) {
-    console.error('App crashed:', error, info);
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    // Sentry no-ops gracefully when DSN isn't set.
+    captureException(error, { extra: { componentStack: info.componentStack } });
+    if (import.meta.env.DEV) {
+      console.error('App crashed:', error, info);
+    }
   }
 
   handleReload = () => {
