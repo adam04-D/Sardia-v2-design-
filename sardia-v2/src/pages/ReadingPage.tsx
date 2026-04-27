@@ -487,8 +487,8 @@ export default function ReadingPage() {
               decoding="async"
               className="w-full h-[120%] object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent mix-blend-multiply"></div>
-            <div className="absolute inset-0 bg-surface/20 backdrop-blur-[2px]"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/85 to-surface/30"></div>
+            <div className="absolute inset-0 bg-surface/40 backdrop-blur-[3px]"></div>
           </motion.div>
 
           <div className="relative z-10 text-center max-w-4xl px-6 mt-20">
@@ -548,7 +548,7 @@ export default function ReadingPage() {
               loading="lazy"
               decoding="async"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/favicon.svg'; }}
-              className="w-16 h-16 rounded-full object-cover grayscale"
+              className="w-16 h-16 rounded-full object-cover object-top grayscale"
             />
             <div>
               <h3 className="font-serif text-xl text-primary font-bold">{SITE_AUTHOR.name}</h3>
