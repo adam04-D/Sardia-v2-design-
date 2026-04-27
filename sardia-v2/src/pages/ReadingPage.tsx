@@ -300,6 +300,7 @@ export default function ReadingPage() {
   const [activeChapter, setActiveChapter] = useState('ch1');
   
   const heroRef = useRef(null);
+  const observersRef = useRef<IntersectionObserver[]>([]);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const yImage = useTransform(heroScroll, [0, 1], ["0%", "20%"]);
   const opacityImage = useTransform(heroScroll, [0, 1], [1, 0.3]);
@@ -353,32 +354,41 @@ export default function ReadingPage() {
 
   // Auto-detect chapters from the DOM and track the active one
   useEffect(() => {
-    const chapterEls = document.querySelectorAll('[id^="ch"]');
-    const detected: { id: string; title: string }[] = [];
-    chapterEls.forEach((el) => {
-      const heading = el.querySelector('h2');
-      if (heading) {
-        detected.push({ id: el.id, title: heading.textContent || '' });
-      }
-    });
-    setChapters(detected);
-    if (detected.length > 0) setActiveChapter(detected[0].id);
+    if (!fullContent) return;
+    // Defer to next paint so MarkdownContent has flushed its DOM nodes before
+    // we query for chapter sections. Without this, the first visit ran the
+    // querySelectorAll before the markdown was rendered and the TOC was empty.
+    const id = requestAnimationFrame(() => {
+      const chapterEls = document.querySelectorAll('[id^="ch"]');
+      const detected: { id: string; title: string }[] = [];
+      chapterEls.forEach((el) => {
+        const heading = el.querySelector('h2');
+        if (heading) {
+          detected.push({ id: el.id, title: heading.textContent || '' });
+        }
+      });
+      setChapters(detected);
+      if (detected.length > 0) setActiveChapter(detected[0].id);
 
-    const observers: IntersectionObserver[] = [];
-    chapterEls.forEach((el) => {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveChapter(el.id);
-          }
-        },
-        { rootMargin: '-20% 0px -60% 0px' }
-      );
-      observer.observe(el);
-      observers.push(observer);
+      chapterEls.forEach((el) => {
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              setActiveChapter(el.id);
+            }
+          },
+          { rootMargin: '-20% 0px -60% 0px' }
+        );
+        observer.observe(el);
+        observersRef.current.push(observer);
+      });
     });
-    return () => observers.forEach((o) => o.disconnect());
-  }, []);
+    return () => {
+      cancelAnimationFrame(id);
+      observersRef.current.forEach((o) => o.disconnect());
+      observersRef.current = [];
+    };
+  }, [fullContent]);
 
   // Effect to handle zen mode body classes
   useEffect(() => {
