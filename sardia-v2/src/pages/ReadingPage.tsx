@@ -345,7 +345,7 @@ export default function ReadingPage() {
       const bodyHeight = document.body.offsetHeight;
       setIsAtBottom(bodyHeight - scrollPosition < 500); // Hide when within 500px of bottom margin
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     // Trigger once on mount in case the page is short
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);

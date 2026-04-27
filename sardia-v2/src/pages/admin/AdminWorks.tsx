@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Heart, Eye, ChevronRight, ChevronLeft, BookOpen, Search, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import type { Pagination, Work } from '../../types';
 
 const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 300;
 
 export default function AdminWorks() {
   const [works, setWorks] = useState<Work[]>([]);
@@ -17,13 +18,29 @@ export default function AdminWorks() {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [query, setQuery] = useState('');
+  // debouncedQuery drives the actual server call; query drives the input value.
+  const [debouncedQuery, setDebouncedQuery] = useState('');
 
-  const load = useCallback(async (p: number) => {
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query.trim()), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  // When in search mode, hit the server-side FTS endpoint so admins can find
+  // any work — not just ones on the currently-loaded page. Empty query falls
+  // back to paged listing.
+  const load = useCallback(async (p: number, q: string) => {
     setLoading(true);
     try {
-      const { works, pagination } = await api.listWorks(p, PAGE_SIZE);
-      setWorks(works);
-      setPagination(pagination);
+      if (q) {
+        const { works } = await api.searchWorks(q);
+        setWorks(works);
+        setPagination(null);
+      } else {
+        const { works, pagination } = await api.listWorks(p, PAGE_SIZE);
+        setWorks(works);
+        setPagination(pagination);
+      }
       setError(null);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'فشل التحميل');
@@ -32,27 +49,19 @@ export default function AdminWorks() {
     }
   }, []);
 
-  useEffect(() => { load(page); }, [load, page]);
-
-  const filteredWorks = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return works;
-    return works.filter((w) =>
-      w.title.toLowerCase().includes(q) ||
-      (w.excerpt ?? '').toLowerCase().includes(q)
-    );
-  }, [works, query]);
+  useEffect(() => { load(page, debouncedQuery); }, [load, page, debouncedQuery]);
 
   const handleDelete = async (w: Work) => {
     if (!confirm(`حذف «${w.title}»؟ هذا الإجراء نهائي.`)) return;
     setDeletingId(w.id);
     try {
       await api.deleteWork(w.id);
-      // If last item on a non-first page, step back; otherwise reload current page
-      if (works.length === 1 && page > 1) {
+      // If last item on a non-first page (and not in search mode), step back;
+      // otherwise reload the current view (page or search results).
+      if (!debouncedQuery && works.length === 1 && page > 1) {
         setPage(page - 1);
       } else {
-        await load(page);
+        await load(page, debouncedQuery);
       }
       toast.success(`تم حذف «${w.title}».`);
     } catch (e) {
@@ -80,7 +89,7 @@ export default function AdminWorks() {
         </Link>
       </header>
 
-      {!loading && !error && works.length > 0 && (
+      {!loading && !error && (works.length > 0 || debouncedQuery) && (
         <div className="relative max-w-md">
           <Search size={16} aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400" />
           <input
@@ -107,7 +116,7 @@ export default function AdminWorks() {
         <p className="font-sans text-stone-500">جاري التحميل...</p>
       ) : error ? (
         <p className="font-sans text-red-600">{error}</p>
-      ) : works.length === 0 ? (
+      ) : works.length === 0 && !debouncedQuery ? (
         <EmptyState
           icon={BookOpen}
           title="لا توجد أعمال بعد"
@@ -136,14 +145,14 @@ export default function AdminWorks() {
                 </tr>
               </thead>
               <tbody>
-                {filteredWorks.length === 0 && (
+                {works.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-4 py-10 text-center font-sans text-sm text-stone-400">
-                      لا نتائج مطابقة لـ «{query}».
+                      لا نتائج مطابقة لـ «{debouncedQuery}».
                     </td>
                   </tr>
                 )}
-                {filteredWorks.map((w) => (
+                {works.map((w) => (
                   <tr key={w.id} className="border-t border-stone-100">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -187,7 +196,7 @@ export default function AdminWorks() {
             </table>
           </div>
 
-          {pagination && pagination.totalPages > 1 && !query && (
+          {pagination && pagination.totalPages > 1 && !debouncedQuery && (
             <nav className="flex items-center justify-between" aria-label="تصفّح الصفحات">
               <button
                 type="button"
