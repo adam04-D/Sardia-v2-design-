@@ -41,7 +41,6 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
     "rollup-plugin-visualizer": "^7.0.1",
-    "sequelize-cli": "^6.6.5",
     "tailwindcss": "^4.1.14",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.58.2"
