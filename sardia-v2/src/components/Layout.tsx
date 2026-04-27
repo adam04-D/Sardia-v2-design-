@@ -223,11 +223,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/saved" className="block py-3 font-serif text-lg text-text-main hover:text-accent transition-colors">
-                    إشاراتي المحفوظة
-                  </Link>
-                </li>
-                <li>
                   <Link to="/contact" className="block py-3 font-serif text-lg text-accent hover:text-primary transition-colors">
                     تواصل معي
                   </Link>
@@ -277,7 +272,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <h4 className="font-serif text-lg text-white mb-4">عن المؤلف</h4>
                 <ul className="space-y-4 font-sans text-sm text-white/70">
                   <li><Link to="/about" className="hover:text-white transition-colors">قصتي</Link></li>
-                  <li><a href="#" className="hover:text-white transition-colors">الصحافة والإعلام</a></li>
                 </ul>
               </div>
 
@@ -294,7 +288,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <h4 className="font-serif text-lg text-white mb-4">المساعدة</h4>
                 <ul className="space-y-4 font-sans text-sm text-white/70">
                   <li><Link to="/contact" className="hover:text-white transition-colors">تواصل معنا</Link></li>
-                  <li><Link to="/saved" className="hover:text-white transition-colors">إشاراتي المحفوظة</Link></li>
                   <li><a href="mailto:adam.daoudi@sardia.me" className="hover:text-white transition-colors">البريد الإلكتروني</a></li>
                 </ul>
               </div>
