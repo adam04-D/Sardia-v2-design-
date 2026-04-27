@@ -36,6 +36,7 @@ export default function HomePage() {
   const heroRef = useRef(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const scaleImage = useTransform(heroScroll, [0, 1], [1, 1.05]);
+  const yHeroImage = useTransform(heroScroll, [0, 1], ["0%", "15%"]);
 
   const libraryRef = useRef(null);
   const { scrollYProgress: libScroll } = useScroll({ target: libraryRef, offset: ["start start", "end start"] });
@@ -64,7 +65,7 @@ export default function HomePage() {
             <div className="aspect-[3/4] overflow-hidden rounded-[2rem] shadow-2xl shadow-accent/10 relative">
               <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-1000 z-10 mix-blend-multiply"></div>
               <motion.img
-                style={{ y: useTransform(heroScroll, [0, 1], ["0%", "15%"]), scale: scaleImage }}
+                style={{ y: yHeroImage, scale: scaleImage }}
                 src="/adam.webp"
                 onError={(e) => {
                   const img = e.currentTarget;

@@ -22,6 +22,13 @@ export default function SavedPage() {
   const [works, setWorks] = useState<Work[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Key the effect on the joined id list (string identity) instead of `ids`
+  // (array identity) so calling `remove()` mid-effect — which mutates the
+  // bookmark store and produces a new `ids` array — does not retrigger the
+  // fetch loop. `remove` is also intentionally outside the dep list because
+  // its identity changes whenever the store updates.
+  const idsKey = ids.join(',');
+
   useEffect(() => {
     if (ids.length === 0) {
       setWorks([]);
@@ -49,7 +56,8 @@ export default function SavedPage() {
         if (!cancelled) setError(e.message);
       });
     return () => { cancelled = true; };
-  }, [ids, remove]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idsKey]);
 
   return (
     <>
