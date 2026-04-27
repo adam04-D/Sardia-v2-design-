@@ -487,8 +487,7 @@ export default function ReadingPage() {
               decoding="async"
               className="w-full h-[120%] object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/85 to-surface/30"></div>
-            <div className="absolute inset-0 bg-surface/40 backdrop-blur-[3px]"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-surface from-25% via-surface/70 via-65% to-transparent"></div>
           </motion.div>
 
           <div className="relative z-10 text-center max-w-4xl px-6 mt-20">

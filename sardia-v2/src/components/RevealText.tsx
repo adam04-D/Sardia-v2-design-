@@ -10,7 +10,7 @@ export const RevealText = ({ text, className = "", delay = 0 }: { text: string, 
   return (
     <div className={`flex flex-wrap gap-x-2 gap-y-1 ${className}`}>
       {words.map((word, i) => (
-        <div key={i} className="overflow-hidden pb-1">
+        <div key={i} className="overflow-hidden pt-2 pb-3">
           <motion.div
             initial={{ y: "120%", opacity: 0, rotate: 2 }}
             whileInView={{ y: 0, opacity: 1, rotate: 0 }}
