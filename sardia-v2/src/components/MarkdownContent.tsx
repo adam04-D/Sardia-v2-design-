@@ -30,10 +30,10 @@ const components: Components = {
   ),
   p: (props) => <p className="mb-6" {...props} />,
   blockquote: (props) => (
-    <blockquote className="border-r-4 border-accent/40 pr-6 my-8 font-serif italic text-text-muted text-xl leading-[2.0]" {...props} />
+    <blockquote className="border-r-4 border-accent/40 pr-4 sm:pr-6 my-6 sm:my-8 font-serif italic text-text-muted text-lg sm:text-xl leading-[1.9] sm:leading-[2.0]" {...props} />
   ),
-  ul: (props) => <ul className="list-disc list-inside space-y-2 my-6 pr-4" {...props} />,
-  ol: (props) => <ol className="list-decimal list-inside space-y-2 my-6 pr-4" {...props} />,
+  ul: (props) => <ul className="list-disc list-outside space-y-2 my-6 pr-6 marker:text-accent/60" {...props} />,
+  ol: (props) => <ol className="list-decimal list-outside space-y-2 my-6 pr-6 marker:text-accent/60" {...props} />,
   li: (props) => <li className="leading-relaxed" {...props} />,
   hr: () => <hr className="my-12 border-accent/20" />,
   a: ({ href, children, ...rest }) => {

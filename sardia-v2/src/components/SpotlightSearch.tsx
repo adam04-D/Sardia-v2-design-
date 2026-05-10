@@ -118,7 +118,7 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 md:px-0"
+          className="fixed inset-0 z-[100] flex items-start justify-center pt-[8vh] sm:pt-[15vh] px-3 sm:px-4 md:px-0"
           dir="rtl"
           role="dialog"
           aria-modal="true"
@@ -142,16 +142,16 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="absolute inset-0 z-[110] flex items-center justify-center p-6 pointer-events-none"
               >
-                <div className="bg-white/90 backdrop-blur-2xl p-12 rounded-[3rem] shadow-2xl border border-white/50 max-w-lg w-full pointer-events-auto relative">
+                <div className="bg-white/90 backdrop-blur-2xl p-6 sm:p-12 rounded-[1.75rem] sm:rounded-[3rem] shadow-2xl border border-white/50 max-w-lg w-full pointer-events-auto relative">
                   <button
                     onClick={() => setShowQuickLook(false)}
                     aria-label="إغلاق المعاينة السريعة"
-                    className="absolute top-8 left-8 p-2 hover:bg-stone-100 rounded-full transition-colors"
+                    className="absolute top-4 left-4 sm:top-8 sm:left-8 p-2 hover:bg-stone-100 rounded-full transition-colors"
                   >
                     <X size={20} aria-hidden="true" />
                   </button>
                   {filteredWorks[selectedIndex].image_url && (
-                    <div className="aspect-[2/3] w-48 mx-auto mb-8 rounded-2xl overflow-hidden shadow-xl">
+                    <div className="aspect-[2/3] w-36 sm:w-48 mx-auto mb-6 sm:mb-8 rounded-2xl overflow-hidden shadow-xl">
                       <img
                         src={cdnImage(filteredWorks[selectedIndex].image_url, 600)}
                         srcSet={cdnSrcSet(filteredWorks[selectedIndex].image_url, [400, 600, 800])}
@@ -163,7 +163,7 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
                       />
                     </div>
                   )}
-                  <h2 className="font-serif text-4xl text-primary text-center mb-4">{filteredWorks[selectedIndex].title}</h2>
+                  <h2 className="font-serif text-2xl sm:text-4xl text-primary text-center mb-3 sm:mb-4">{filteredWorks[selectedIndex].title}</h2>
                   <p className="font-sans text-accent text-center font-bold mb-6 uppercase tracking-widest text-xs">
                     {filteredWorks[selectedIndex].likes_count} إعجاب
                   </p>
@@ -199,18 +199,18 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
             </div>
 
             {/* Input Area */}
-            <div className="flex items-center px-6 py-5 bg-stone-50/50 border-b border-accent/10 pt-2">
-              <Search className="text-accent ml-4" size={24} aria-hidden="true" />
+            <div className="flex items-center px-4 sm:px-6 py-4 sm:py-5 bg-stone-50/50 border-b border-accent/10 pt-2">
+              <Search className="text-accent ml-3 sm:ml-4 shrink-0" size={22} aria-hidden="true" />
               <input
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label="حقل البحث عن الأعمال الأدبية"
-                className="flex-1 bg-transparent border-none focus:ring-0 text-xl font-sans text-text-main placeholder:text-stone-400 outline-none"
+                className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-base sm:text-xl font-sans text-text-main placeholder:text-stone-400 outline-none"
                 placeholder="ابحث عن عمل أدبي..."
                 type="text"
               />
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 {query && (
                   <button
                     onClick={() => setQuery('')}
@@ -220,16 +220,29 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
                     <X size={16} aria-hidden="true" />
                   </button>
                 )}
-                <div className="flex items-center gap-2 px-2 py-1 bg-white rounded-md border border-stone-200 shadow-sm cursor-pointer" onClick={handleClose}>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  aria-label="إغلاق البحث"
+                  className="hidden sm:flex items-center gap-2 px-2 py-1 bg-white rounded-md border border-stone-200 shadow-sm cursor-pointer"
+                >
                   <span className="text-[10px] font-sans font-bold text-stone-500 uppercase tracking-tighter">ESC</span>
-                </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  aria-label="إغلاق البحث"
+                  className="sm:hidden p-1.5 hover:bg-stone-200 rounded-full transition-colors text-stone-500"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
               </div>
             </div>
 
             {/* Content */}
             <div className="overflow-y-auto flex-1 custom-scrollbar">
               {/* Works Results */}
-              <div className="px-6 py-6">
+              <div className="px-4 sm:px-6 py-5 sm:py-6">
                 <h3 className="text-xs font-sans font-bold text-accent tracking-widest uppercase mb-4">
                   {query.trim() ? `نتائج البحث (${filteredWorks.length})` : 'جميع الأعمال'}
                 </h3>
@@ -286,8 +299,8 @@ export default function SpotlightSearch({ isOpen, onClose }: { isOpen: boolean; 
               </div>
             </div>
 
-            {/* Footer Hints */}
-            <div className="flex items-center justify-between px-6 py-3 bg-stone-100/50 text-[10px] font-sans text-stone-500 border-t border-accent/10">
+            {/* Footer Hints — keyboard shortcuts only meaningful on desktop */}
+            <div className="hidden sm:flex items-center justify-between px-6 py-3 bg-stone-100/50 text-[10px] font-sans text-stone-500 border-t border-accent/10">
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1">
                   <span className="bg-white px-1.5 py-0.5 rounded shadow-sm border border-stone-200 flex items-center gap-0.5"><ArrowUp size={10}/><ArrowDown size={10}/></span> 

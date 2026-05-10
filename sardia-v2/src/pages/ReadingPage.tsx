@@ -65,28 +65,28 @@ const ReaderInteraction = ({
   };
 
   return (
-    <section className="mt-32 pt-16 border-t border-accent/10">
+    <section className="mt-20 md:mt-32 pt-12 md:pt-16 border-t border-accent/10">
       <div className="max-w-2xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12 text-center md:text-right">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 mb-10 md:mb-12 text-center md:text-right">
           <div className="space-y-2">
-            <h3 className="font-serif text-3xl text-primary font-bold">شاركنا أثر النص</h3>
+            <h3 className="font-serif text-2xl sm:text-3xl text-primary font-bold">شاركنا أثر النص</h3>
             <p className="font-sans text-sm text-text-muted">اترك انطباعك أو كلمة للمؤلف</p>
           </div>
           <button
             onClick={onToggleLike}
             aria-label={liked ? 'تم تسجيل إعجابك' : 'أعجبني'}
             aria-pressed={liked}
-            className={`flex items-center gap-3 px-8 py-4 rounded-full transition-all duration-500 border group ${liked ? 'bg-accent/5 border-accent text-accent shadow-lg shadow-accent/5' : 'bg-stone-50 border-stone-200 text-stone-400 hover:border-accent/30 hover:bg-stone-100'}`}
+            className={`flex items-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all duration-500 border group ${liked ? 'bg-accent/5 border-accent text-accent shadow-lg shadow-accent/5' : 'bg-stone-50 border-stone-200 text-stone-400 hover:border-accent/30 hover:bg-stone-100'}`}
           >
             <Heart size={22} fill={liked ? "currentColor" : "none"} aria-hidden="true" className={`transition-transform duration-500 ${liked ? "scale-110" : "group-hover:scale-110"}`} />
             <span className="font-sans text-sm font-bold tracking-wide">{liked ? "أعجبك النص" : "أعجبني"}</span>
           </button>
         </div>
 
-        <div className="glass-panel p-8 md:p-10 rounded-[2.5rem] space-y-8 relative overflow-hidden group">
+        <div className="glass-panel p-6 sm:p-8 md:p-10 rounded-[1.75rem] sm:rounded-[2.5rem] space-y-6 sm:space-y-8 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all group-hover:bg-accent/10"></div>
-          
-          <div className="grid grid-cols-1 gap-8 relative z-10">
+
+          <div className="grid grid-cols-1 gap-6 sm:gap-8 relative z-10">
             <div className="space-y-3">
               <label className="font-sans text-[10px] font-bold text-accent uppercase tracking-[0.2em] mr-2 text-right block">الاسم</label>
               <input
@@ -447,13 +447,13 @@ export default function ReadingPage() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed top-0 right-0 bottom-0 w-[90%] max-w-sm bg-surface/95 backdrop-blur-xl border-l border-accent/10 z-[80] shadow-2xl flex flex-col"
             >
-              <div className="p-8 border-b border-accent/10 flex justify-between items-center">
-                <h2 className="font-serif text-2xl text-primary font-bold">الفهرس</h2>
+              <div className="p-6 sm:p-8 border-b border-accent/10 flex justify-between items-center">
+                <h2 className="font-serif text-xl sm:text-2xl text-primary font-bold">الفهرس</h2>
                 <button onClick={() => setIsTocOpen(false)} aria-label="إغلاق الفهرس" className="p-2 text-stone-400 hover:text-accent transition-colors rounded-full hover:bg-accent/5">
                   <X size={20} aria-hidden="true" />
                 </button>
               </div>
-              <div className="p-8 overflow-y-auto flex-1">
+              <div className="p-6 sm:p-8 overflow-y-auto flex-1">
                 <div className="mb-8">
                   <p className="font-sans text-xs font-bold text-stone-400 tracking-wider uppercase mb-2">الكتاب</p>
                   <h3 className="font-serif text-xl text-primary">{displayTitle || '—'}</h3>
@@ -483,7 +483,7 @@ export default function ReadingPage() {
       <div className={`transition-all duration-1000 ${isZenMode ? 'max-w-3xl mx-auto' : ''}`}>
         
         {/* Immersive Hero Section */}
-        <header ref={heroRef} className={`relative h-[60vh] min-h-[500px] items-center justify-center mb-24 overflow-hidden rounded-[3rem] ${isZenMode ? 'hidden' : 'flex'}`}>
+        <header ref={heroRef} className={`relative h-[55vh] min-h-[380px] md:h-[60vh] md:min-h-[500px] items-center justify-center mb-16 md:mb-24 overflow-hidden mx-3 sm:mx-4 md:mx-0 rounded-[1.75rem] md:rounded-[3rem] ${isZenMode ? 'hidden' : 'flex'}`}>
           <motion.div 
             className="absolute inset-0 z-0"
             style={{ y: yImage, opacity: opacityImage }}
@@ -500,28 +500,28 @@ export default function ReadingPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-surface from-25% via-surface/70 via-65% to-transparent"></div>
           </motion.div>
 
-          <div className="relative z-10 text-center max-w-4xl px-6 mt-20">
-            <motion.div 
+          <div className="relative z-10 text-center max-w-4xl px-5 md:px-6 mt-16 md:mt-20">
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex items-center justify-center gap-4 mb-8"
+              className="flex items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8"
             >
-              <span className="font-sans text-xs font-bold tracking-[0.2em] uppercase text-accent">دراسات نقدية</span>
-              <span className="w-12 h-[1px] bg-accent/30"></span>
-              <span className="font-sans text-xs font-bold tracking-[0.2em] uppercase text-stone-500">كتاب كامل</span>
+              <span className="font-sans text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase text-accent">دراسات نقدية</span>
+              <span className="w-8 sm:w-12 h-[1px] bg-accent/30"></span>
+              <span className="font-sans text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase text-stone-500">كتاب كامل</span>
             </motion.div>
-            
+
             <RevealText
               text={displayTitle}
-              className="font-serif text-5xl md:text-6xl lg:text-7xl text-primary mb-8 leading-[1.2] justify-center"
+              className="font-serif text-3xl sm:text-4xl md:text-6xl lg:text-7xl text-primary mb-6 md:mb-8 leading-[1.2] justify-center"
             />
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              className="text-xl md:text-2xl text-text-muted leading-[2.0] font-sans max-w-2xl mx-auto"
+              className="text-base sm:text-lg md:text-2xl text-text-muted leading-[1.8] md:leading-[2.0] font-sans max-w-2xl mx-auto"
             >
               {displayExcerpt}
             </motion.p>
@@ -540,8 +540,8 @@ export default function ReadingPage() {
         </header>
 
         {/* Reading Content */}
-        <article 
-          className={`max-w-3xl mx-auto font-serif text-text-main leading-[2.2] transition-all duration-500 ${isZenMode ? 'pt-24' : ''}`}
+        <article
+          className={`max-w-3xl mx-auto px-5 md:px-8 lg:px-0 font-serif text-text-main leading-[1.95] md:leading-[2.2] transition-all duration-500 ${isZenMode ? 'pt-24' : ''}`}
           style={{ fontSize: `${1.125 * fontSize}rem` }}
         >
           <motion.div
@@ -549,7 +549,7 @@ export default function ReadingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
-            className="flex items-center gap-6 mb-16 pb-8 border-b border-accent/10"
+            className="flex items-center gap-4 sm:gap-6 mb-12 md:mb-16 pb-6 md:pb-8 border-b border-accent/10"
           >
             <img
               src={SITE_AUTHOR.avatar}
@@ -557,13 +557,13 @@ export default function ReadingPage() {
               loading="lazy"
               decoding="async"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/favicon.svg'; }}
-              className="w-16 h-16 rounded-full object-cover object-top grayscale"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover object-top grayscale shrink-0"
             />
-            <div>
-              <h3 className="font-serif text-xl text-primary font-bold">{SITE_AUTHOR.name}</h3>
-              <p className="font-sans text-sm text-text-muted">{SITE_AUTHOR.role}</p>
+            <div className="min-w-0">
+              <h3 className="font-serif text-lg sm:text-xl text-primary font-bold truncate">{SITE_AUTHOR.name}</h3>
+              <p className="font-sans text-xs sm:text-sm text-text-muted truncate">{SITE_AUTHOR.role}</p>
             </div>
-            <div className="mr-auto flex gap-3">
+            <div className="mr-auto flex gap-2 sm:gap-3 shrink-0">
               <button
                 type="button"
                 onClick={handleShare}
@@ -609,7 +609,7 @@ export default function ReadingPage() {
           <div className="space-y-12">
             {fullContent && (
               <div id="ch1" className="scroll-mt-32">
-                <h2 className="text-3xl md:text-4xl text-primary font-bold mb-12 text-center">{displayTitle}</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl text-primary font-bold mb-8 md:mb-12 text-center">{displayTitle}</h2>
                 <MarkdownContent source={fullContent} />
               </div>
             )}
@@ -637,11 +637,11 @@ export default function ReadingPage() {
             />
 
             {relatedWorks.length > 0 && (
-              <section className="mt-24 pt-16 border-t border-accent/10" aria-labelledby="related-heading">
-                <h4 id="related-heading" className="font-serif text-2xl text-primary font-bold text-center mb-10">
+              <section className="mt-16 md:mt-24 pt-12 md:pt-16 border-t border-accent/10" aria-labelledby="related-heading">
+                <h4 id="related-heading" className="font-serif text-xl sm:text-2xl text-primary font-bold text-center mb-8 md:mb-10">
                   قد يستوقفك أيضاً
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
                   {relatedWorks.map((rw) => (
                     <Link
                       key={rw.id}
@@ -694,11 +694,11 @@ export default function ReadingPage() {
       </div>
 
       {/* Floating Control Menu */}
-      <motion.div 
+      <motion.div
         initial={{ y: 100, opacity: 0, x: "-50%" }}
         animate={{ y: isAtBottom ? 150 : 0, opacity: isAtBottom ? 0 : 1, x: "-50%" }}
         transition={{ delay: isAtBottom ? 0 : 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-8 left-1/2 z-50 glass-panel rounded-full px-6 py-3 flex items-center gap-6 shadow-2xl shadow-accent/10"
+        className="fixed bottom-5 sm:bottom-8 left-1/2 z-50 glass-panel rounded-full px-4 sm:px-6 py-2.5 sm:py-3 flex items-center gap-3 sm:gap-6 shadow-2xl shadow-accent/10 max-w-[calc(100vw-1.5rem)]"
       >
         <button
           onClick={() => setIsTocOpen(true)}
@@ -723,7 +723,7 @@ export default function ReadingPage() {
         
         <div className="w-[1px] h-6 bg-stone-300"></div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={decreaseFontSize}
             aria-label="تصغير حجم الخط"

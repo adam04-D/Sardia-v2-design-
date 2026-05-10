@@ -24,14 +24,14 @@ export default function AuthorStudy() {
   const { works: publications } = useWorks(1, 4);
 
   return (
-    <>
+    <div className="px-5 md:px-12 max-w-7xl mx-auto pt-24 md:pt-28">
       <Seo
         title="مكتب المؤلف"
         path="/author"
         description="مكتب آدم داودي: مساحة فكرية تضم المقالات، المراسلات، والمشاريع الأدبية الجارية."
       />
       {/* Hero Section */}
-      <section ref={heroRef} className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center mb-40 pt-12">
+      <section ref={heroRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center mb-24 md:mb-40 pt-6 md:pt-12">
         <motion.div
           className="lg:col-span-5 relative group z-10"
           initial={{ opacity: 0, filter: "blur(10px)" }}
@@ -57,15 +57,15 @@ export default function AuthorStudy() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="absolute -bottom-10 -left-10 glass-panel p-8 rounded-3xl max-w-[280px] z-20"
+            className="absolute -bottom-6 -left-4 sm:-bottom-10 sm:-left-10 glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl max-w-[220px] sm:max-w-[280px] z-20"
           >
-            <Eyebrow className="mb-3">الاسم الأدبي</Eyebrow>
-            <h1 className="font-serif text-4xl font-bold text-text-main">آدم داودي</h1>
+            <Eyebrow className="mb-2 sm:mb-3">الاسم الأدبي</Eyebrow>
+            <h1 className="font-serif text-2xl sm:text-4xl font-bold text-text-main">آدم داودي</h1>
           </motion.div>
         </motion.div>
 
-        <div className="lg:col-span-7 space-y-10 lg:pt-16 z-20">
-          <div className="space-y-8">
+        <div className="lg:col-span-7 space-y-8 md:space-y-10 pt-6 lg:pt-16 z-20">
+          <div className="space-y-6 md:space-y-8">
             <motion.span
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -78,7 +78,7 @@ export default function AuthorStudy() {
 
             <RevealText
               text="مرحباً، أنا آدم داودي. أكتب القصص والأفكار التي تعكس نبض الحياة اليومية."
-              className="font-serif text-4xl lg:text-5xl xl:text-6xl leading-[1.3] text-text-main"
+              className="font-serif text-3xl sm:text-4xl md:text-5xl xl:text-6xl leading-[1.3] text-text-main"
               delay={0.4}
             />
 
@@ -86,7 +86,7 @@ export default function AuthorStudy() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              className="font-sans text-lg text-text-muted leading-relaxed max-w-2xl"
+              className="font-sans text-base md:text-lg text-text-muted leading-relaxed max-w-2xl"
             >
               هذا الموقع هو مساحتي الخاصة لمشاركة أعمالي الأدبية معكم. أسعى عبر "سرديا" لترجمة هذا الشغف إلى نصوص معاصرة تربط القارئ بجذوره العميقة. أكتبُ لا لأوثق الحقيقة فحسب، بل لأخلق عالماً يسكنه الخيال والتدبر.
             </motion.p>
@@ -95,11 +95,11 @@ export default function AuthorStudy() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="flex flex-wrap gap-4 pt-6"
+            className="flex flex-wrap gap-3 sm:gap-4 pt-4 md:pt-6"
           >
             <a
               href="mailto:adamdaoudi04@gmail.com"
-              className="group relative overflow-hidden bg-primary text-surface px-8 py-4 rounded-full font-sans text-sm font-bold transition-all hover:shadow-xl hover:shadow-primary/20 flex items-center gap-3"
+              className="group relative overflow-hidden bg-primary text-surface px-6 sm:px-8 py-3.5 sm:py-4 rounded-full font-sans text-sm font-bold transition-all hover:shadow-xl hover:shadow-primary/20 flex items-center gap-3"
             >
               <span className="absolute inset-0 w-full h-full bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
               <span className="relative z-10 flex items-center gap-3">
@@ -113,10 +113,10 @@ export default function AuthorStudy() {
 
       {/* Publications Section */}
       {publications.length > 0 && (
-        <section className="space-y-16 mb-40">
+        <section className="space-y-10 md:space-y-16 mb-24 md:mb-40">
           <SectionHeading title="أحدث الإصدارات" viewAllTo="/gallery" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
             {publications.slice(0, 4).map((pub, i) => (
               <Link to={`/reading/${pub.id}`} key={pub.id}>
                 <motion.article
@@ -124,9 +124,9 @@ export default function AuthorStudy() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.8, delay: i * 0.2, ease: "easeOut" }}
-                  className="flex flex-col sm:flex-row gap-8 group cursor-pointer"
+                  className="flex flex-col sm:flex-row gap-6 sm:gap-8 group cursor-pointer"
                 >
-                  <div className="w-full sm:w-52 shrink-0 overflow-hidden rounded-[2rem] shadow-xl aspect-[2/3] bg-stone-100 relative">
+                  <div className="w-full sm:w-44 md:w-52 shrink-0 overflow-hidden rounded-[1.75rem] sm:rounded-[2rem] shadow-xl aspect-[2/3] bg-stone-100 relative">
                     <div className="absolute inset-0 bg-accent/20 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply"></div>
                     <img
                       src={cdnImage(pub.image_url, 800) || PUBLICATION_FALLBACK_IMAGE}
@@ -138,11 +138,11 @@ export default function AuthorStudy() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-[0.16,1,0.3,1]"
                     />
                   </div>
-                  <div className="flex flex-col justify-center space-y-5">
+                  <div className="flex flex-col justify-center space-y-4 md:space-y-5">
                     <span className="font-sans text-[10px] font-bold text-accent tracking-[0.2em]">
                       {new Date(pub.created_at).toLocaleDateString('ar', { year: 'numeric', month: 'long' })}
                     </span>
-                    <h4 className="font-serif text-3xl font-bold text-text-main group-hover:text-accent transition-colors duration-300">{pub.title}</h4>
+                    <h4 className="font-serif text-2xl sm:text-3xl font-bold text-text-main group-hover:text-accent transition-colors duration-300">{pub.title}</h4>
                     {pub.excerpt && (
                       <p className="font-sans text-base text-text-muted leading-relaxed line-clamp-3">
                         {pub.excerpt}
@@ -166,7 +166,7 @@ export default function AuthorStudy() {
         whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-20 rounded-[3rem] overflow-hidden h-[600px] relative group shadow-2xl shadow-accent/10"
+        className="mb-16 md:mb-20 rounded-[1.75rem] md:rounded-[3rem] overflow-hidden h-[400px] sm:h-[480px] md:h-[600px] relative group shadow-2xl shadow-accent/10"
       >
         <img
           src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1600&auto=format&fit=crop"
@@ -176,10 +176,10 @@ export default function AuthorStudy() {
           className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 scale-105 group-hover:scale-100"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1a1c1c] via-[#1a1c1c]/60 to-transparent opacity-90"></div>
-        <div className="absolute bottom-20 right-10 md:right-20 max-w-3xl text-right">
+        <div className="absolute bottom-10 sm:bottom-16 md:bottom-20 right-6 left-6 md:right-20 md:left-auto md:max-w-3xl text-right">
           <RevealText
             text='"الكتابة هي التنفس الوحيد الذي لا يحتاج لرئتين، بل لقلب نابض بالحكايات."'
-            className="font-serif italic text-3xl md:text-5xl text-white leading-[1.6] mb-10"
+            className="font-serif italic text-2xl sm:text-3xl md:text-5xl text-white leading-[1.5] md:leading-[1.6] mb-6 md:mb-10"
           />
           <motion.p
             initial={{ opacity: 0, x: -20 }}
@@ -191,6 +191,6 @@ export default function AuthorStudy() {
           </motion.p>
         </div>
       </motion.section>
-    </>
+    </div>
   );
 }

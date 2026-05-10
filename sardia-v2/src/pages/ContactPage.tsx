@@ -58,10 +58,10 @@ export default function ContactPage() {
       <Seo title="تواصل معنا" description="أرسل رسالتك إلى آدم داودي." path="/contact" />
       <section
         dir="rtl"
-        className="max-w-2xl mx-auto px-6 md:px-12 py-24 text-right font-serif text-text-main"
+        className="max-w-2xl mx-auto px-5 md:px-12 pt-24 md:pt-28 pb-16 md:pb-24 text-right font-serif text-text-main"
       >
-        <h1 className="font-serif text-4xl md:text-5xl text-primary font-bold mb-6">تواصل معنا</h1>
-        <p className="font-sans text-text-muted leading-[2] mb-12">
+        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-primary font-bold mb-4 md:mb-6">تواصل معنا</h1>
+        <p className="font-sans text-base md:text-lg text-text-muted leading-[1.9] md:leading-[2] mb-10 md:mb-12">
           سواء كان سؤالاً، ملاحظةً على عمل، أو دعوةً للتعاون — اترك رسالتك وسنعود إليك في أقرب وقت.
         </p>
 
@@ -130,7 +130,7 @@ export default function ContactPage() {
           <button
             type="submit"
             disabled={!canSubmit}
-            className="inline-flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-xl font-sans text-sm font-bold hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-3 bg-primary text-white w-full sm:w-auto px-8 py-4 rounded-xl font-sans text-sm font-bold hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send size={16} aria-hidden="true" />
             {submitting ? 'جاري الإرسال...' : 'إرسال الرسالة'}

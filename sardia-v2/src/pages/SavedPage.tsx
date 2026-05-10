@@ -66,18 +66,18 @@ export default function SavedPage() {
         path="/saved"
         description="الأعمال التي حفظتها للعودة إليها لاحقاً على سرديا."
       />
-      <section className="min-h-screen pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
-        <header className="mb-16 max-w-3xl">
-          <h1 className="font-serif text-5xl md:text-6xl text-primary leading-[1.2] mb-6">
+      <section className="min-h-screen pt-24 md:pt-32 pb-16 md:pb-20 px-5 md:px-12 max-w-7xl mx-auto">
+        <header className="mb-12 md:mb-16 max-w-3xl">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-6xl text-primary leading-[1.2] mb-4 md:mb-6">
             إشاراتي المحفوظة
           </h1>
-          <p className="font-sans text-lg text-text-muted leading-[2.0]">
+          <p className="font-sans text-base md:text-lg text-text-muted leading-[1.9] md:leading-[2.0]">
             الأعمال التي وضعتَ عليها إشارة للعودة إليها. تُحفظ على جهازك فقط.
           </p>
         </header>
 
         {works === null && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {[0, 1, 2].map((i) => <WorkCardSkeleton key={i} />)}
           </div>
         )}
@@ -97,10 +97,10 @@ export default function SavedPage() {
         )}
 
         {works && works.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {works.map((w) => (
               <Link to={`/reading/${w.id}`} key={w.id} className="group cursor-pointer">
-                <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-8 bg-stone-100 relative">
+                <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-6 md:mb-8 bg-stone-100 relative">
                   <img
                     src={cdnImage(w.image_url, 800) || FALLBACK_IMAGE}
                     srcSet={cdnSrcSet(w.image_url, [400, 600, 800, 1200])}

@@ -122,7 +122,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className={`flex justify-between items-center px-6 md:px-12 transition-all duration-500 max-w-7xl mx-auto ${isScrolled ? 'py-3' : 'py-5'}`}>
+        <div className={`flex justify-between items-center px-5 md:px-12 transition-all duration-500 max-w-7xl mx-auto ${isScrolled ? 'py-3' : 'py-4 md:py-5'}`}>
           <button
             onClick={() => {
               if (isHome) {
@@ -132,7 +132,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               }
             }}
             aria-label="سرديا - الصفحة الرئيسية"
-            className="text-3xl font-bold text-accent font-serif tracking-tight cursor-pointer"
+            className="text-2xl md:text-3xl font-bold text-accent font-serif tracking-tight cursor-pointer"
           >
             سرديا
           </button>
@@ -163,7 +163,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ))
             )}
           </nav>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-2 md:gap-4 items-center">
             <button
               onClick={() => setIsSearchOpen(true)}
               aria-label="فتح البحث (CMD + K)"
@@ -239,14 +239,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Premium Multi-Column Footer */}
       {!isReading && (
-        <footer id="contact" className="w-full bg-[#523A28] text-[#FDFBF7] py-20 mt-20">
-          <div className="max-w-7xl mx-auto px-6 md:px-12">
-            
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-8 mb-16 border-b border-white/10 pb-16">
-              
+        <footer id="contact" className="w-full bg-[#523A28] text-[#FDFBF7] py-14 md:py-20 mt-16 md:mt-20">
+          <div className="max-w-7xl mx-auto px-5 md:px-12">
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-8 mb-12 md:mb-16 border-b border-white/10 pb-12 md:pb-16">
+
               {/* Brand & Socials (Col 1) */}
-              <div className="md:col-span-2 space-y-8">
-                <div className="text-4xl font-serif font-bold text-white tracking-widest">آدم داودي</div>
+              <div className="md:col-span-2 space-y-6 md:space-y-8">
+                <div className="text-3xl md:text-4xl font-serif font-bold text-white tracking-widest">آدم داودي</div>
                 <div className="flex gap-4">
                   <a
                     href="https://www.instagram.com/sardia.me"
@@ -268,25 +268,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
 
               {/* Links (Cols 2-4) */}
-              <div className="space-y-6">
-                <h4 className="font-serif text-lg text-white mb-4">عن المؤلف</h4>
-                <ul className="space-y-4 font-sans text-sm text-white/70">
+              <div className="space-y-4 md:space-y-6">
+                <h4 className="font-serif text-base md:text-lg text-white mb-3 md:mb-4">عن المؤلف</h4>
+                <ul className="space-y-3 md:space-y-4 font-sans text-sm text-white/70">
                   <li><Link to="/about" className="hover:text-white transition-colors">قصتي</Link></li>
                 </ul>
               </div>
 
-              <div className="space-y-6">
-                <h4 className="font-serif text-lg text-white mb-4">المكتبة</h4>
-                <ul className="space-y-4 font-sans text-sm text-white/70">
+              <div className="space-y-4 md:space-y-6">
+                <h4 className="font-serif text-base md:text-lg text-white mb-3 md:mb-4">المكتبة</h4>
+                <ul className="space-y-3 md:space-y-4 font-sans text-sm text-white/70">
                   <li><Link to="/gallery" className="hover:text-white transition-colors">كل الأعمال</Link></li>
                   <li><Link to="/author" className="hover:text-white transition-colors">مكتب المؤلف</Link></li>
                   <li><Link to="/about" className="hover:text-white transition-colors">عن المؤلف</Link></li>
                 </ul>
               </div>
 
-              <div className="space-y-6">
-                <h4 className="font-serif text-lg text-white mb-4">المساعدة</h4>
-                <ul className="space-y-4 font-sans text-sm text-white/70">
+              <div className="space-y-4 md:space-y-6">
+                <h4 className="font-serif text-base md:text-lg text-white mb-3 md:mb-4">المساعدة</h4>
+                <ul className="space-y-3 md:space-y-4 font-sans text-sm text-white/70">
                   <li><Link to="/contact" className="hover:text-white transition-colors">تواصل معنا</Link></li>
                   <li><a href="mailto:adam.daoudi@sardia.me" className="hover:text-white transition-colors">البريد الإلكتروني</a></li>
                 </ul>
@@ -295,9 +295,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Bottom Bar */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-xs text-white/50">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-xs text-white/50 text-center md:text-right">
               <p>© 2026 سرديا. جميع الحقوق محفوظة. تم تطوير الموقع بواسطة آدم داودي.</p>
-              <div className="flex gap-6">
+              <div className="flex gap-5 md:gap-6">
                 <Link to="/terms" className="hover:text-white transition-colors">شروط الاستخدام</Link>
                 <Link to="/privacy" className="hover:text-white transition-colors">سياسة الخصوصية</Link>
               </div>

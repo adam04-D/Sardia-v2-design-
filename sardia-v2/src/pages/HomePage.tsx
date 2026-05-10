@@ -54,8 +54,8 @@ export default function HomePage() {
       {/* ============================== */}
       {/* SECTION 1: المؤلف (Author)     */}
       {/* ============================== */}
-      <section id="author" ref={heroRef} className="snap-section min-h-screen flex items-center pt-24">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center py-12 px-6 md:px-12 max-w-7xl mx-auto">
+      <section id="author" ref={heroRef} className="snap-section min-h-screen flex items-center pt-20 md:pt-24">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center py-8 md:py-12 px-5 md:px-12 max-w-7xl mx-auto">
           <motion.div
             className="lg:col-span-5 relative group z-10"
             initial={{ opacity: 0, filter: "blur(10px)" }}
@@ -83,14 +83,14 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="absolute -bottom-10 -left-10 glass-panel p-8 rounded-3xl max-w-[280px] z-20"
+              className="absolute -bottom-6 -left-4 sm:-bottom-10 sm:-left-10 glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl max-w-[220px] sm:max-w-[280px] z-20"
             >
-              <Eyebrow className="mb-3">الاسم الأدبي</Eyebrow>
-              <h1 className="font-serif text-4xl font-bold text-text-main">آدم داودي</h1>
+              <Eyebrow className="mb-2 sm:mb-3">الاسم الأدبي</Eyebrow>
+              <h1 className="font-serif text-2xl sm:text-4xl font-bold text-text-main">آدم داودي</h1>
             </motion.div>
           </motion.div>
 
-          <div className="lg:col-span-7 space-y-10 lg:pt-16 z-20">
+          <div className="lg:col-span-7 space-y-8 md:space-y-10 pt-6 lg:pt-16 z-20">
             <div className="space-y-8">
               <motion.span
                 initial={{ opacity: 0, x: -20 }}
@@ -104,7 +104,7 @@ export default function HomePage() {
 
               <RevealText
                 text="مرحباً، أنا آدم داودي. أكتب القصص والأفكار التي تعكس نبض الحياة اليومية."
-                className="font-serif text-4xl lg:text-5xl xl:text-6xl leading-[1.3] text-text-main"
+                className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-[1.3] text-text-main"
                 delay={0.4}
               />
 
@@ -112,7 +112,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.8 }}
-                className="font-sans text-lg text-text-muted leading-relaxed max-w-2xl"
+                className="font-sans text-base md:text-lg text-text-muted leading-relaxed max-w-2xl"
               >
                 هذا الموقع هو مساحتي الخاصة لمشاركة أعمالي الأدبية معكم. أسعى عبر "سرديا" لترجمة هذا الشغف إلى نصوص معاصرة تربط القارئ بجذوره العميقة. أكتبُ لا لأوثق الحقيقة فحسب، بل لأخلق عالماً يسكنه الخيال والتدبر.
               </motion.p>
@@ -121,9 +121,9 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1, duration: 0.8 }}
-              className="flex flex-wrap gap-4 pt-6"
+              className="flex flex-wrap gap-3 sm:gap-4 pt-4 md:pt-6"
             >
-              <a href="#contact" className="group relative overflow-hidden bg-primary text-surface px-8 py-4 rounded-full font-sans text-sm font-bold transition-all hover:shadow-xl hover:shadow-primary/20 flex items-center gap-3">
+              <a href="#contact" className="group relative overflow-hidden bg-primary text-surface px-6 sm:px-8 py-3.5 sm:py-4 rounded-full font-sans text-sm font-bold transition-all hover:shadow-xl hover:shadow-primary/20 flex items-center gap-3">
                 <span className="absolute inset-0 w-full h-full bg-accent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></span>
                 <span className="relative z-10 flex items-center gap-3">
                   <Mail size={18} />
@@ -132,7 +132,7 @@ export default function HomePage() {
               </a>
               <a
                 href="#library"
-                className="group border border-accent/30 text-accent px-8 py-4 rounded-full font-sans text-sm font-bold transition-all hover:bg-accent hover:text-surface flex items-center gap-3"
+                className="group border border-accent/30 text-accent px-6 sm:px-8 py-3.5 sm:py-4 rounded-full font-sans text-sm font-bold transition-all hover:bg-accent hover:text-surface flex items-center gap-3"
               >
                 استكشف أعمالي
                 <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
@@ -148,7 +148,7 @@ export default function HomePage() {
         whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-6 md:mx-12 max-w-7xl lg:mx-auto rounded-[3rem] overflow-hidden h-[500px] relative group shadow-2xl shadow-accent/10 mt-16 mb-8"
+        className="mx-5 md:mx-12 max-w-7xl lg:mx-auto rounded-[2rem] sm:rounded-[3rem] overflow-hidden h-[360px] sm:h-[440px] md:h-[500px] relative group shadow-2xl shadow-accent/10 mt-12 md:mt-16 mb-8"
       >
         <img
           src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1600&auto=format&fit=crop"
@@ -158,10 +158,10 @@ export default function HomePage() {
           className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 scale-105 group-hover:scale-100"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1a1c1c] via-[#1a1c1c]/60 to-transparent opacity-90"></div>
-        <div className="absolute bottom-20 right-10 md:right-20 max-w-3xl text-right">
+        <div className="absolute bottom-10 sm:bottom-16 md:bottom-20 right-6 left-6 md:right-20 md:left-auto md:max-w-3xl text-right">
           <RevealText
             text='"الكتابة هي التنفس الوحيد الذي لا يحتاج لرئتين، بل لقلب نابض بالحكايات."'
-            className="font-serif italic text-3xl md:text-5xl text-white leading-[1.6] mb-10"
+            className="font-serif italic text-2xl sm:text-3xl md:text-5xl text-white leading-[1.5] md:leading-[1.6] mb-6 md:mb-10"
           />
           <motion.p
             initial={{ opacity: 0, x: -20 }}
@@ -177,21 +177,21 @@ export default function HomePage() {
       {/* ============================== */}
       {/* SECTION 2: المكتبة (Library)    */}
       {/* ============================== */}
-      <section id="library" ref={libraryRef} className="snap-section min-h-screen py-32">
-        <div className="px-6 md:px-12 max-w-7xl mx-auto">
+      <section id="library" ref={libraryRef} className="snap-section min-h-screen py-20 md:py-32">
+        <div className="px-5 md:px-12 max-w-7xl mx-auto">
 
           {/* Library Header */}
-          <header className="mb-24 max-w-4xl relative z-10">
+          <header className="mb-16 md:mb-24 max-w-4xl relative z-10">
             <RevealText
               text="أثرُ الكلمة، في رحابِ المعنى."
-              className="font-serif text-6xl md:text-7xl lg:text-8xl text-primary mb-8 leading-[1.2]"
+              className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-primary mb-6 md:mb-8 leading-[1.2]"
             />
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="text-xl md:text-2xl text-text-muted leading-[2.0] max-w-2xl font-sans"
+              className="text-lg md:text-2xl text-text-muted leading-[1.9] md:leading-[2.0] max-w-2xl font-sans"
             >
               مساحةٌ رقمية مهيأة للباحثين عن جودة النص وعمق الفكرة. نجمعُ لك نفائس الأدب العربي في قالبٍ يليقُ بجلالِ الحرف.
             </motion.p>
@@ -201,7 +201,7 @@ export default function HomePage() {
           {bentoLoading && bentoWorks.length === 0 ? (
             <BentoSkeleton />
           ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:grid-rows-2 mb-40">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-5 md:gap-6 md:grid-rows-2 mb-24 md:mb-40">
 
             {/* Featured Card (Large) */}
             {featured && (
@@ -228,22 +228,22 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-transparent"></div>
                   </div>
 
-                  <div className="relative z-10 p-10 md:p-12 h-full flex flex-col justify-end">
+                  <div className="relative z-10 p-7 sm:p-10 md:p-12 h-full flex flex-col justify-end">
                     <div className="transition-all duration-700 group-hover:opacity-0 group-hover:-translate-y-4">
-                      <Eyebrow className="mb-4">إصدار مميز</Eyebrow>
-                      <h2 className="font-serif text-5xl md:text-6xl text-primary mb-4">{featured.title}</h2>
+                      <Eyebrow className="mb-3 md:mb-4">إصدار مميز</Eyebrow>
+                      <h2 className="font-serif text-3xl sm:text-4xl md:text-6xl text-primary mb-3 md:mb-4">{featured.title}</h2>
                       {featured.excerpt && (
-                        <p className="font-sans text-lg text-text-muted line-clamp-2">{featured.excerpt}</p>
+                        <p className="font-sans text-base md:text-lg text-text-muted line-clamp-2">{featured.excerpt}</p>
                       )}
                     </div>
 
-                    <div className="absolute inset-0 bg-white/95 p-10 md:p-12 flex flex-col justify-center items-start opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-700 ease-[0.16,1,0.3,1]">
+                    <div className="absolute inset-0 bg-white/95 p-7 sm:p-10 md:p-12 flex flex-col justify-center items-start opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-700 ease-[0.16,1,0.3,1]">
                       {featured.excerpt && (
-                        <p className="font-serif text-2xl md:text-3xl leading-[1.8] text-primary mb-10 italic line-clamp-5">
+                        <p className="font-serif text-xl sm:text-2xl md:text-3xl leading-[1.7] md:leading-[1.8] text-primary mb-6 md:mb-10 italic line-clamp-5">
                           "{featured.excerpt}"
                         </p>
                       )}
-                      <span className="bg-primary text-surface px-8 py-4 rounded-full font-sans text-sm font-bold flex items-center gap-4 hover:bg-accent transition-colors shadow-lg shadow-primary/20">
+                      <span className="bg-primary text-surface px-6 sm:px-8 py-3 sm:py-4 rounded-full font-sans text-sm font-bold flex items-center gap-3 sm:gap-4 hover:bg-accent transition-colors shadow-lg shadow-primary/20">
                         اقرأ العمل كاملاً
                         <ArrowLeft size={18} />
                       </span>
@@ -265,18 +265,18 @@ export default function HomePage() {
                   transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                   className="h-full relative group overflow-hidden rounded-[2.5rem] bg-stone-100/80 border border-stone-200/50 min-h-[240px]"
                 >
-                  <div className="p-10 h-full flex flex-col justify-between border-r-4 border-accent">
+                  <div className="p-7 sm:p-10 h-full flex flex-col justify-between border-r-4 border-accent">
                     <div className="transition-all duration-700 group-hover:opacity-0 group-hover:-translate-y-4">
-                      <BookOpen className="text-accent mb-6" size={28} strokeWidth={1.5} />
-                      <h3 className="font-serif text-3xl md:text-4xl text-primary mb-3">{medium.title}</h3>
+                      <BookOpen className="text-accent mb-5 md:mb-6" size={28} strokeWidth={1.5} />
+                      <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl text-primary mb-3">{medium.title}</h3>
                       {medium.excerpt && (
                         <p className="font-sans text-text-muted line-clamp-2">{medium.excerpt}</p>
                       )}
                     </div>
 
-                    <div className="absolute inset-0 bg-accent p-10 flex flex-col justify-center text-white opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-700 ease-[0.16,1,0.3,1]">
+                    <div className="absolute inset-0 bg-accent p-7 sm:p-10 flex flex-col justify-center text-white opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-700 ease-[0.16,1,0.3,1]">
                       {medium.excerpt && (
-                        <p className="font-serif text-2xl leading-[1.8] mb-8 italic line-clamp-4">
+                        <p className="font-serif text-xl sm:text-2xl leading-[1.7] sm:leading-[1.8] mb-6 sm:mb-8 italic line-clamp-4">
                           "{medium.excerpt}"
                         </p>
                       )}
@@ -302,15 +302,15 @@ export default function HomePage() {
                   transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
                   className="h-full relative group overflow-hidden rounded-[2.5rem] bg-white border border-stone-200/50 shadow-sm min-h-[240px]"
                 >
-                  <div className="p-8 h-full flex flex-col items-center text-center justify-center">
+                  <div className="p-6 sm:p-8 h-full flex flex-col items-center text-center justify-center">
                     <div className="transition-all duration-700 group-hover:opacity-0 group-hover:scale-95">
-                      <h4 className="font-serif text-3xl text-primary mb-3 line-clamp-2">{small1.title}</h4>
+                      <h4 className="font-serif text-2xl sm:text-3xl text-primary mb-3 line-clamp-2">{small1.title}</h4>
                       <p className="font-sans text-xs font-bold text-stone-400 tracking-wider">
                         {formatArabicDate(small1.created_at)}
                       </p>
                     </div>
 
-                    <div className="absolute inset-0 bg-surface p-8 flex flex-col justify-center items-center opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[0.16,1,0.3,1]">
+                    <div className="absolute inset-0 bg-surface p-6 sm:p-8 flex flex-col justify-center items-center opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[0.16,1,0.3,1]">
                       <Bookmark className="text-accent mb-4" size={24} strokeWidth={1.5} />
                       {small1.excerpt && (
                         <p className="font-sans text-sm text-text-muted mb-6 line-clamp-3">{small1.excerpt}</p>
@@ -334,16 +334,16 @@ export default function HomePage() {
                   transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                   className="h-full relative group overflow-hidden rounded-[2.5rem] bg-stone-100/50 min-h-[240px]"
                 >
-                  <div className="p-8 h-full flex flex-col justify-between">
+                  <div className="p-6 sm:p-8 h-full flex flex-col justify-between">
                     <div className="transition-all duration-700 group-hover:opacity-0 group-hover:-translate-x-4">
-                      <span className="font-serif text-5xl text-accent/20 block mb-2">«</span>
-                      <h4 className="font-serif text-3xl text-primary mb-2 line-clamp-2">{small2.title}</h4>
+                      <span className="font-serif text-4xl sm:text-5xl text-accent/20 block mb-2">«</span>
+                      <h4 className="font-serif text-2xl sm:text-3xl text-primary mb-2 line-clamp-2">{small2.title}</h4>
                       <p className="font-sans text-xs font-bold text-stone-400 tracking-wider">
                         {small2.likes_count} إعجاب
                       </p>
                     </div>
 
-                    <div className="absolute inset-0 bg-primary p-8 flex flex-col justify-center items-center text-white opacity-0 translate-x-8 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-700 ease-[0.16,1,0.3,1]">
+                    <div className="absolute inset-0 bg-primary p-6 sm:p-8 flex flex-col justify-center items-center text-white opacity-0 translate-x-8 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-700 ease-[0.16,1,0.3,1]">
                       {small2.excerpt && (
                         <p className="font-sans text-center text-sm leading-relaxed mb-6 line-clamp-4">{small2.excerpt}</p>
                       )}
@@ -357,8 +357,8 @@ export default function HomePage() {
           )}
 
           {/* Secondary Feed */}
-          <div className="mb-20">
-            <SectionHeading title="أحدث الإضافات" className="mb-12" />
+          <div className="mb-12 md:mb-20">
+            <SectionHeading title="أحدث الإضافات" className="mb-8 md:mb-12" />
 
             <LatestWorks />
           </div>
@@ -404,7 +404,7 @@ function LatestWorks() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
       {works.map((w, i) => (
         <Link to={`/reading/${w.id}`} key={w.id}>
           <motion.article
@@ -415,7 +415,7 @@ function LatestWorks() {
             transition={{ duration: 0.8, delay: i * 0.2, ease: 'easeOut' }}
             className="group cursor-pointer"
           >
-            <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-8 bg-stone-100 relative">
+            <div className="aspect-[4/5] overflow-hidden rounded-[2rem] mb-6 md:mb-8 bg-stone-100 relative">
               <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors duration-700 z-10 mix-blend-multiply" />
               <img
                 src={cdnImage(w.image_url, 800) || FALLBACK_IMAGE}
@@ -432,7 +432,7 @@ function LatestWorks() {
                 <span className="text-accent">•</span>
                 <span>عمل أدبي</span>
               </div>
-              <h4 className="font-serif text-3xl text-primary group-hover:text-accent transition-colors duration-300 leading-snug">
+              <h4 className="font-serif text-2xl sm:text-3xl text-primary group-hover:text-accent transition-colors duration-300 leading-snug">
                 {w.title}
               </h4>
               {w.excerpt && (
